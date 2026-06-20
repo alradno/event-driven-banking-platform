@@ -56,4 +56,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: gateway log scan after smoke found no recurrence of the previous `RequestRateLimiterGatewayFilterFactory`/`ReadOnlyHttpHeaders` exception.
 - Completed: runtime fix branch merged back to `master`.
 - Passed: `make e2e-test`; verified 401, 403, 429, customer/account ownership isolation, payment completion and idempotency, outbox publication, Kafka payment offset growth, notification event publication, audit records by correlation/trace ID, gateway Prometheus metrics, and evidence-backed AI output.
-- Pending: merge E2E runtime contract branch back to `master`.
+- Completed: E2E runtime contract branch merged back to `master`.
