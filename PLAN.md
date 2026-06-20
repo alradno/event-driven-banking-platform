@@ -45,12 +45,11 @@
 - Add architecture and sequence diagrams, screenshots, Postman collection, production-readiness notes, limitations, roadmap, and CV/LinkedIn summary.
 - Add Kubernetes/Helm only after the Compose MVP is green.
 
-## Current Branch Increment
+## Next Branch Increment
 
-The current branch targets negative E2E coverage for payment edge cases and DLQ replay safety:
+The next branch targets the remaining test/compatibility hardening needed before the full objective can be called complete:
 
-- Verify reused idempotency keys with changed request bodies fail with `409` instead of creating another payment.
-- Exercise rejected payment outcomes for insufficient funds, frozen source accounts, and ownership mismatch through the Compose gateway path.
-- Assert rejected payments create audit records with their correlation IDs.
-- Prove no-match notification DLQ replay reports zero replays and does not publish a notification event.
-- Keep `README.md` and `STATUS.md` current with local evidence before merging back to `master`.
+- Add real Testcontainers integration coverage for PostgreSQL and Kafka-backed service behavior.
+- Add WireMock coverage for downstream HTTP failure contracts where service-to-service calls are involved.
+- Add automated event envelope/schema compatibility checks for documented event versions.
+- Keep `README.md`, `SPEC.md`, and `STATUS.md` current with local evidence before merging back to `master`.
