@@ -15,7 +15,7 @@ flowchart LR
   Gateway --> AI[ai-incident-assistant]
   Payment --> Account
   Payment --> Outbox[(payment outbox)]
-  Outbox --> Kafka[(Kafka / Redpanda)]
+  Outbox --> Kafka[(Apache Kafka)]
   Kafka --> Audit
   Kafka --> Notification[notification-service]
   Notification --> Kafka
@@ -84,6 +84,7 @@ make up
 make seed
 make demo
 make smoke
+make e2e-test
 ```
 
 Local URLs:
@@ -127,7 +128,8 @@ Local URLs:
 | `make down` | Stop and delete local volumes |
 | `make seed` | Print deterministic users and account IDs |
 | `make test` | Run Java unit tests and AI rule-engine tests |
-| `make integration-test` | Run Maven integration phase and smoke test |
+| `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
+| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification, metrics, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
 | `make simulate-payment-stuck` | Send stuck-payment evidence to AI assistant |
@@ -167,8 +169,10 @@ Current test coverage includes:
 - Payment idempotency request hashing.
 - Notification failure switch.
 - AI assistant evidence/no-evidence behavior.
+- Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
+- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, gateway metrics, and AI report evidence.
 
-Planned expansion includes Testcontainers integration tests, gateway security tests for 401/403/429, Kafka flow tests, audit persistence tests, and full E2E Compose coverage.
+Planned expansion includes Testcontainers integration tests, richer negative payment workflow tests, and schema compatibility checks.
 
 ## Documentation
 
@@ -191,7 +195,7 @@ Planned expansion includes Testcontainers integration tests, gateway security te
 ## Roadmap
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
-- Add full payment E2E assertions for audit and notification consumption.
+- Expand E2E assertions for retry/DLQ replay and trace export inspection.
 - Add richer Grafana dashboards and captured screenshots.
 - Add schema compatibility checks for event envelope versions.
 - Add Kubernetes manifests and Helm chart after the Compose MVP is fully verified.

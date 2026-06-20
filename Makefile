@@ -3,7 +3,7 @@ COMPOSE ?= podman compose
 MVNW ?= ./mvnw
 PYTHON ?= python3
 
-.PHONY: up down seed test integration-test demo logs smoke \
+.PHONY: up down seed test integration-test e2e-test demo logs smoke \
 	simulate-payment-stuck simulate-notification-failure simulate-auth-failure \
 	simulate-high-latency simulate-kafka-lag
 
@@ -23,6 +23,10 @@ test:
 integration-test:
 	$(MVNW) verify -Pintegration
 	./scripts/smoke-test.sh
+	./scripts/e2e-test.sh
+
+e2e-test:
+	./scripts/e2e-test.sh
 
 demo:
 	./scripts/demo.sh
