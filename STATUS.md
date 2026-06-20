@@ -26,6 +26,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Kubernetes/Helm service chart added on branch `feat/kubernetes-helm`.
 - Negative payment and replay-safety E2E coverage added on branch `test/payment-negative-e2e`.
 - Testcontainers/WireMock and event schema compatibility coverage added on branch `test/testcontainers-wiremock-schema`.
+- Kubernetes smoke readiness script and Make target added on branch `test/kubernetes-cluster-smoke-readiness`.
 
 ## In Progress
 
@@ -33,7 +34,7 @@ The repository started from the initial `README.md` only. The first implementati
 
 ## Not Yet Complete
 
-- A real Kubernetes cluster smoke test has not been run; Helm is currently render/lint verified only.
+- A real Kubernetes cluster smoke test has not been run because the local `kubectl` has no current context configured.
 
 ## Local Tooling Observed
 
@@ -41,6 +42,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Maven not installed locally; repository will include `./mvnw`.
 - Python available locally: Python 3.13.
 - Docker CLI not installed locally; Podman is available and exposes a Docker-compatible socket that Testcontainers can use.
+- Kubernetes CLI available locally: `kubectl` is installed, but `kubectl config current-context` is not set.
 
 ## Completion Evidence Log
 
@@ -99,3 +101,10 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make test`, `podman compose config`, and `git diff --check` after the Testcontainers/WireMock/schema branch changes.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Testcontainers/WireMock/schema branch changes.
 - Completed: Testcontainers/WireMock/schema compatibility branch merged back to `master`.
+- Passed: `sh -n scripts/k8s-validate.sh scripts/k8s-smoke.sh`.
+- Passed: `make helm-lint` using `alpine/helm:3.15.4`; strict Helm linting succeeded with only the informational missing-icon recommendation.
+- Passed: `make helm-template` using `alpine/helm:3.15.4`; rendered 766 lines of Kubernetes manifests.
+- Passed: `make k8s-validate` using `alpine/helm:3.15.4`; offline manifest checks verified seven Deployments, seven Services, probes, scrape annotations, config, and default Postgres Secret wiring.
+- Blocked as expected: `make k8s-smoke` cannot run locally yet because `kubectl current-context` is not set.
+- Passed: `make test`, `podman compose config`, and `git diff --check` after the Kubernetes smoke readiness branch changes.
+- Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Kubernetes smoke readiness branch changes.

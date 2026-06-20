@@ -132,7 +132,10 @@ Local URLs:
 | `make e2e-test` | Prove auth, ownership, payment idempotency/conflicts, negative payment outcomes, Kafka, audit, notification DLQ/replay safety, metrics, trace export, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
+| `make helm-lint` | Run strict Helm linting for the Kubernetes chart |
 | `make helm-template` | Render the Kubernetes Helm chart when `helm` is available |
+| `make k8s-validate` | Validate the rendered Kubernetes manifest contract without a cluster |
+| `make k8s-smoke` | Validate the chart against a configured Kubernetes cluster; set `K8S_SMOKE_APPLY=true` for install/rollout health smoke |
 | `make simulate-payment-stuck` | Send stuck-payment evidence to AI assistant |
 | `make simulate-notification-failure` | Force a notification DLQ, replay it, and analyze DLQ evidence |
 | `make simulate-auth-failure` | Trigger an unauthenticated call and analyze auth failure evidence |
@@ -200,5 +203,5 @@ Planned expansion includes cluster smoke coverage for the Helm chart and broader
 
 ## Roadmap
 
-- Add a real Kubernetes cluster smoke test and production values examples for managed dependencies.
+- Run the Kubernetes smoke against a real cluster once a context, pullable images, and managed dependencies are available.
 - Expand event compatibility fixtures across all producers and consumers.

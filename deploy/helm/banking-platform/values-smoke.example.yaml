@@ -1,0 +1,50 @@
+# Example overrides for running the Helm chart smoke against a real cluster.
+# Replace all example hosts and image repositories with cluster-local values.
+
+global:
+  otlpTracingEndpoint: http://otel-collector.observability.svc.cluster.local:4318/v1/traces
+  otelExporterOtlpEndpoint: http://otel-collector.observability.svc.cluster.local:4318
+
+external:
+  kafkaBootstrapServers: kafka.banking-infra.svc.cluster.local:9092
+  redisHost: redis.banking-infra.svc.cluster.local
+  redisPort: "6379"
+  keycloakIssuerUri: http://keycloak.banking-infra.svc.cluster.local/realms/banking
+  keycloakJwkSetUri: http://keycloak.banking-infra.svc.cluster.local/realms/banking/protocol/openid-connect/certs
+
+postgres:
+  host: postgres.banking-infra.svc.cluster.local
+  port: "5432"
+  existingSecret: banking-postgres-credentials
+  usernameKey: SPRING_DATASOURCE_USERNAME
+  passwordKey: SPRING_DATASOURCE_PASSWORD
+
+services:
+  apiGateway:
+    image:
+      repository: registry.example.com/banking/api-gateway
+      tag: smoke
+  customerService:
+    image:
+      repository: registry.example.com/banking/customer-service
+      tag: smoke
+  accountService:
+    image:
+      repository: registry.example.com/banking/account-service
+      tag: smoke
+  paymentService:
+    image:
+      repository: registry.example.com/banking/payment-service
+      tag: smoke
+  auditService:
+    image:
+      repository: registry.example.com/banking/audit-service
+      tag: smoke
+  notificationService:
+    image:
+      repository: registry.example.com/banking/notification-service
+      tag: smoke
+  aiIncidentAssistant:
+    image:
+      repository: registry.example.com/banking/ai-incident-assistant
+      tag: smoke
