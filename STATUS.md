@@ -54,4 +54,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make smoke`; duplicate idempotency key returned the same payment ID and the AI incident endpoint returned evidence/likely causes.
 - Passed: `make integration-test`; Maven `verify -Pintegration` completed and smoke passed again.
 - Passed: gateway log scan after smoke found no recurrence of the previous `RequestRateLimiterGatewayFilterFactory`/`ReadOnlyHttpHeaders` exception.
-- Pending: merge runtime fix branch back to `master`.
+- Completed: runtime fix branch merged back to `master`.
