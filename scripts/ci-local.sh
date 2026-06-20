@@ -10,12 +10,6 @@ KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:18089}"
 AI_URL="${AI_URL:-http://localhost:18090}"
 export COMPOSE_CMD GATEWAY_URL KEYCLOAK_URL AI_URL
 
-cleanup() {
-  # shellcheck disable=SC2086
-  $COMPOSE down -v >/dev/null 2>&1 || true
-}
-trap cleanup EXIT
-
 compose_diagnostics() {
   echo "Compose status:" >&2
   # shellcheck disable=SC2086
@@ -27,6 +21,18 @@ compose_diagnostics() {
     $COMPOSE logs --tail=120 "$service" >&2 || true
   done
 }
+
+cleanup() {
+  status="$?"
+  if [ "$status" -ne 0 ]; then
+    compose_diagnostics
+  fi
+
+  # shellcheck disable=SC2086
+  $COMPOSE down -v >/dev/null 2>&1 || true
+  exit "$status"
+}
+trap cleanup EXIT
 
 wait_http() {
   description="$1"
@@ -45,7 +51,6 @@ wait_http() {
   done
 
   echo "Timed out waiting for $description at $url" >&2
-  compose_diagnostics
   return 1
 }
 

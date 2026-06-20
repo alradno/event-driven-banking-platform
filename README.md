@@ -195,6 +195,7 @@ Planned expansion includes optional Kubernetes install/rollout smoke with extern
 - [Runbooks](docs/runbooks)
 - [Kubernetes / Helm](docs/kubernetes-helm.md)
 - [Completion audit](docs/completion-audit.md)
+- [Remote CI verification](docs/remote-ci-verification.md)
 - [Production readiness notes](docs/production-readiness.md)
 - [CV / LinkedIn summary](docs/cv-linkedin-summary.md)
 
