@@ -75,3 +75,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Captured: Grafana dashboard screenshot at `docs/screenshots/grafana-banking-overview.png` after running the Compose E2E flow.
 - Passed: `make test`.
 - Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed after dashboard/alert changes.
+- Completed: observability dashboard and alerts branch merged back to `master`.
