@@ -29,7 +29,8 @@ The repository is runnable, documented, and locally verified for the Compose por
 
 - `make ci-local` passed on `2026-06-20` with repository scan, Java and Python tests, clean image build, Compose readiness, smoke, and E2E.
 - The E2E output included `securityAudit=ok`, proving audited `security.login_failed`, `security.access_denied`, and `security.rate_limit_exceeded` records in `audit_db`.
-- `git diff --quiet 8c60f22 977049b` returned success after merging `feat/security-events-audit`, proving the security-events merge tree matched the locally verified feature commit.
+- `git diff --quiet f8ec282 e009fc6` returned success after merging `feat/security-events-audit`, proving the security-events merge tree matched the locally verified feature commit after rewriting unpublished local history to `alradno`.
+- `git log --format='%an <%ae> | %cn <%ce>' origin/master..master | sort | uniq -c` shows all unpublished commits authored and committed as `alradno <24854770+alradno@users.noreply.github.com>`.
 - `git push --dry-run origin master` failed with GitHub `403` for `paradlow_amadeus`, so the remote CI requirement still depends on a push from credentials with write access.
 
 ## Remaining External Checks
