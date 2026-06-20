@@ -28,6 +28,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Testcontainers/WireMock and event schema compatibility coverage added on branch `test/testcontainers-wiremock-schema`.
 - Kubernetes smoke readiness script and Make target added on branch `test/kubernetes-cluster-smoke-readiness`.
 - Completion audit added on branch `docs/final-objective-audit`.
+- Repository scan gate added on branch `ci/repository-scan-gate`.
 
 ## In Progress
 
@@ -113,3 +114,5 @@ The repository started from the initial `README.md` only. The first implementati
 - Completed: Kubernetes smoke readiness branch merged back to `master`.
 - Completed: objective audit in `docs/completion-audit.md`; remaining incomplete checks are external Kubernetes cluster smoke and remote CI verification after push.
 - Completed: final objective audit branch merged back to `master`.
+- Passed: `make scan`; repository hygiene and secret-pattern checks found no forbidden tracked artifacts or token/private-key patterns.
+- Passed: `make test`, `podman compose config`, and `git diff --check` after adding the CI repository scan gate.

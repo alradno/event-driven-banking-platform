@@ -23,7 +23,7 @@ The repository is runnable, documented, and locally verified for the Compose por
 | Observability | Complete locally | Metrics, trace propagation/export evidence, dashboards, alerts, screenshot, and runbooks are present. |
 | Tests | Complete locally | `make test`, `make integration-test`, Testcontainers/WireMock ITs, Compose smoke/E2E, and simulation targets have passing local evidence in `STATUS.md`. |
 | Kubernetes packaging | Partially complete | Helm lint/template and offline manifest contract validation pass; real cluster smoke remains blocked by missing `kubectl` context. |
-| CI/CD | Partially complete | GitHub Actions and Jenkinsfile exist; remote CI pass is not verified because nothing was pushed. |
+| CI/CD | Partially complete | GitHub Actions and Jenkinsfile run repository scans, tests, image builds, and Compose smoke/E2E; remote CI pass is not verified because nothing was pushed. |
 
 ## Remaining External Checks
 

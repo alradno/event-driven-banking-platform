@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Repository scans
+        run: make scan
       - name: Java tests
         run: ./mvnw test
       - name: AI assistant tests

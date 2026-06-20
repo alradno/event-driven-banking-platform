@@ -6,6 +6,11 @@ pipeline {
   }
 
   stages {
+    stage('Repository Scans') {
+      steps {
+        sh './scripts/ci-scan.sh'
+      }
+    }
     stage('Test') {
       steps {
         sh './mvnw test'
