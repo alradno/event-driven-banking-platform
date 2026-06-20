@@ -18,15 +18,15 @@ The repository started from the initial `README.md` only. The first implementati
 - Payment idempotency hashing, payment state machine, and transactional outbox implemented.
 - Rule-based FastAPI AI incident assistant implemented with evidence/no-evidence tests.
 - Docker Compose, Makefile, scripts, OpenAPI, Postman collection, runbooks, CI, and Jenkinsfile added.
+- Compose runtime hardened on branch `fix/compose-runtime-startup` for local Podman: Apache Kafka broker, high published ports, Keycloak import fixes, and gateway OIDC/JWK configuration.
 
 ## In Progress
 
-- Compose MVP hardening beyond the first verified image builds.
 - E2E tests that assert Kafka, audit, notification, metrics, traces, and gateway security behavior together.
+- Completion audit against the full portfolio objective.
 
 ## Not Yet Complete
 
-- Full Compose runtime verification.
 - Complete end-to-end tests.
 - Complete dashboards, alerts, and screenshots.
 - Kubernetes/Helm.
@@ -46,5 +46,12 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `podman compose config`.
 - Passed: `podman compose build ai-incident-assistant`.
 - Passed: `podman compose build customer-service`.
-- Pending: full `make up` plus `scripts/smoke-test.sh` against all services.
-- Pending: merge implementation branch back to `master`.
+- Failed then addressed: `make up` could not pull `docker.redpanda.com/redpandadata/redpanda:v24.2.10` because Podman rejected the registry certificate, local ports `6379`/`3000` were occupied, and Java images for Kafka/Keycloak hit `SIGILL` on local aarch64 Podman. Runtime fix branch switched the broker to Docker Hub `apache/kafka`, parameterized high published ports, and disables JVM SVE for affected containers.
+- Passed: `make up` against local Podman with Postgres, Kafka, Redis, Keycloak, all Java services, AI assistant, Prometheus, Grafana, and OTel collector running on non-conflicting local ports.
+- Passed: gateway health at `http://localhost:18080/actuator/health`.
+- Passed: AI assistant health at `http://localhost:18090/health`.
+- Passed: Keycloak password-grant token checks for `alice`, `support`, and `sre` after adding complete demo user profile fields.
+- Passed: `make smoke`; duplicate idempotency key returned the same payment ID and the AI incident endpoint returned evidence/likely causes.
+- Passed: `make integration-test`; Maven `verify -Pintegration` completed and smoke passed again.
+- Passed: gateway log scan after smoke found no recurrence of the previous `RequestRateLimiterGatewayFilterFactory`/`ReadOnlyHttpHeaders` exception.
+- Pending: merge runtime fix branch back to `master`.

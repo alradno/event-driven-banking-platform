@@ -62,7 +62,7 @@ sequenceDiagram
 - Spring Cloud Gateway, Spring Security, OAuth2 resource server.
 - Keycloak demo realm with roles: `CUSTOMER`, `SUPPORT_AGENT`, `BACKOFFICE_OPERATOR`, `AUDITOR`, `SRE`, `ADMIN`.
 - PostgreSQL databases per service.
-- Redpanda as the local Kafka-compatible broker.
+- Apache Kafka as the local event broker.
 - Redis gateway rate limits.
 - OpenTelemetry collector, Prometheus, Grafana.
 - Python FastAPI AI incident assistant.
@@ -88,11 +88,11 @@ make smoke
 
 Local URLs:
 
-- Gateway: `http://localhost:8080`
-- Keycloak: `http://localhost:8089`
-- AI assistant direct health: `http://localhost:8090/health`
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` (`admin/admin`)
+- Gateway: `http://localhost:18080`
+- Keycloak: `http://localhost:18089`
+- AI assistant direct health: `http://localhost:18090/health`
+- Prometheus: `http://localhost:19091`
+- Grafana: `http://localhost:13000` (`admin/admin`)
 
 ## Demo Users
 

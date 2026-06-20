@@ -4,7 +4,7 @@ set -eu
 . "$(dirname "$0")/lib.sh"
 
 curl -fsS "$GATEWAY_URL/actuator/health" >/dev/null
-curl -fsS "${AI_URL:-http://localhost:8090}/health" >/dev/null
+curl -fsS "${AI_URL:-http://localhost:18090}/health" >/dev/null
 
 TOKEN="$(token_for alice)"
 CORRELATION_ID="smoke-$(date +%s)"

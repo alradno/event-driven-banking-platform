@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
-GATEWAY_URL="${GATEWAY_URL:-http://localhost:8080}"
-KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:8089}"
+GATEWAY_URL="${GATEWAY_URL:-http://localhost:18080}"
+KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:18089}"
 CLIENT_ID="${CLIENT_ID:-banking-gateway}"
 PASSWORD="${PASSWORD:-password}"
 

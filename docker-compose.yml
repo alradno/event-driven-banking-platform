@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-banking}
       POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-15432}:5432"
     volumes:
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
@@ -17,30 +17,31 @@ services:
       timeout: 5s
       retries: 10
 
-  redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:v24.2.10
-    command:
-      - redpanda
-      - start
-      - --overprovisioned
-      - --smp
-      - "1"
-      - --memory
-      - 1G
-      - --reserve-memory
-      - 0M
-      - --node-id
-      - "0"
-      - --check=false
-      - --kafka-addr
-      - PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
-      - --advertise-kafka-addr
-      - PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+  kafka:
+    image: apache/kafka:3.8.1
+    hostname: kafka
     ports:
-      - "19092:19092"
-      - "9644:9644"
+      - "${KAFKA_PORT:-19092}:19092"
+    environment:
+      KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
+      KAFKA_OPTS: "-XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
+      KAFKA_GC_LOG_OPTS: "-Xlog:gc*:file=/tmp/kafkaServer-gc.log:time,tags:filecount=10,filesize=100M"
+      KAFKA_JVM_PERFORMANCE_OPTS: "-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:${KAFKA_PORT:-19092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: ["CMD-SHELL", "rpk cluster health --brokers=localhost:9092 | grep -q Healthy"]
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -48,7 +49,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "${REDIS_PUBLISHED_PORT:-16380}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -61,8 +62,9 @@ services:
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      JAVA_OPTS_APPEND: "-XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
     ports:
-      - "8089:8080"
+      - "${KEYCLOAK_PORT:-18089}:8080"
     volumes:
       - ./infra/keycloak:/opt/keycloak/data/import:ro
 
@@ -74,11 +76,12 @@ services:
         MODULE: api-gateway
     environment:
       SERVER_PORT: 8080
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/banking
+      KEYCLOAK_ISSUER_URI: http://localhost:18089/realms/banking
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/banking/protocol/openid-connect/certs
       REDIS_HOST: redis
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     ports:
-      - "8080:8080"
+      - "${GATEWAY_PORT:-18080}:8080"
     depends_on:
       - keycloak
       - redis
@@ -99,10 +102,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres
-      - redpanda
+      - kafka
 
   account-service:
     build:
@@ -114,10 +117,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/account_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres
-      - redpanda
+      - kafka
 
   payment-service:
     build:
@@ -129,11 +132,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       ACCOUNT_SERVICE_URL: http://account-service:8080
     depends_on:
       - postgres
-      - redpanda
+      - kafka
       - account-service
 
   audit-service:
@@ -146,10 +149,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/audit_db
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres
-      - redpanda
+      - kafka
 
   notification-service:
     build:
@@ -158,10 +161,10 @@ services:
       args:
         MODULE: notification-service
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       DEMO_NOTIFICATION_FAILURE: ${DEMO_NOTIFICATION_FAILURE:-false}
     depends_on:
-      - redpanda
+      - kafka
 
   ai-incident-assistant:
     build:
@@ -169,20 +172,20 @@ services:
     environment:
       RUNBOOK_DIR: /app/runbooks
     ports:
-      - "8090:8090"
+      - "${AI_PORT:-18090}:8090"
 
   prometheus:
     image: prom/prometheus:v2.55.0
     command: ["--config.file=/etc/prometheus/prometheus.yml"]
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT:-19091}:9090"
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
   grafana:
     image: grafana/grafana:11.3.0
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-13000}:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
@@ -193,7 +196,7 @@ services:
     image: otel/opentelemetry-collector-contrib:0.113.0
     command: ["--config=/etc/otelcol/config.yml"]
     ports:
-      - "4317:4317"
-      - "4318:4318"
+      - "${OTEL_GRPC_PORT:-14317}:4317"
+      - "${OTEL_HTTP_PORT:-14318}:4318"
     volumes:
       - ./infra/otel-collector/config.yml:/etc/otelcol/config.yml:ro
