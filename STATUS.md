@@ -27,14 +27,16 @@ The repository started from the initial `README.md` only. The first implementati
 - Negative payment and replay-safety E2E coverage added on branch `test/payment-negative-e2e`.
 - Testcontainers/WireMock and event schema compatibility coverage added on branch `test/testcontainers-wiremock-schema`.
 - Kubernetes smoke readiness script and Make target added on branch `test/kubernetes-cluster-smoke-readiness`.
+- Completion audit added on branch `docs/final-objective-audit`.
 
 ## In Progress
 
-- Completion audit against the full portfolio objective.
+- Waiting for external verification inputs.
 
 ## Not Yet Complete
 
 - A real Kubernetes cluster smoke test has not been run because the local `kubectl` has no current context configured.
+- Remote GitHub Actions CI has not been verified because the local commits have not been pushed.
 
 ## Local Tooling Observed
 
@@ -109,3 +111,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make test`, `podman compose config`, and `git diff --check` after the Kubernetes smoke readiness branch changes.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Kubernetes smoke readiness branch changes.
 - Completed: Kubernetes smoke readiness branch merged back to `master`.
+- Completed: objective audit in `docs/completion-audit.md`; remaining incomplete checks are external Kubernetes cluster smoke and remote CI verification after push.

@@ -192,6 +192,7 @@ Planned expansion includes cluster smoke coverage for the Helm chart and broader
 - [Postman collection](docs/postman/banking-demo.postman_collection.json)
 - [Runbooks](docs/runbooks)
 - [Kubernetes / Helm](docs/kubernetes-helm.md)
+- [Completion audit](docs/completion-audit.md)
 - [Production readiness notes](docs/production-readiness.md)
 - [CV / LinkedIn summary](docs/cv-linkedin-summary.md)
 
