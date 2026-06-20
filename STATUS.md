@@ -68,3 +68,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make e2e-test`; additionally verified OpenTelemetry collector output contains the exported `banking.trace_id` tag for the Compose payment flow.
 - Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed with OpenTelemetry trace-export evidence.
 - Passed: all five simulation targets again after trace-export changes: payment stuck, notification failure, auth failure, high latency, and Kafka lag.
+- Completed: OpenTelemetry trace export E2E branch merged back to `master`.
