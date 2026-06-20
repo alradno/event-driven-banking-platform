@@ -1,0 +1,49 @@
+SHELL := /bin/sh
+COMPOSE ?= podman compose
+MVNW ?= ./mvnw
+PYTHON ?= python3
+
+.PHONY: up down seed test integration-test demo logs smoke \
+	simulate-payment-stuck simulate-notification-failure simulate-auth-failure \
+	simulate-high-latency simulate-kafka-lag
+
+up:
+	$(COMPOSE) up -d --build
+
+down:
+	$(COMPOSE) down -v
+
+seed:
+	./scripts/seed.sh
+
+test:
+	$(MVNW) test
+	cd ai-incident-assistant && $(PYTHON) -m unittest discover -s tests
+
+integration-test:
+	$(MVNW) verify -Pintegration
+	./scripts/smoke-test.sh
+
+demo:
+	./scripts/demo.sh
+
+logs:
+	$(COMPOSE) logs -f --tail=200
+
+smoke:
+	./scripts/smoke-test.sh
+
+simulate-payment-stuck:
+	./scripts/simulations/payment-stuck.sh
+
+simulate-notification-failure:
+	./scripts/simulations/notification-failure.sh
+
+simulate-auth-failure:
+	./scripts/simulations/auth-failure.sh
+
+simulate-high-latency:
+	./scripts/simulations/high-latency.sh
+
+simulate-kafka-lag:
+	./scripts/simulations/kafka-lag.sh
