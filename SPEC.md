@@ -97,7 +97,7 @@ Terminal alternatives:
 - `FAILED`: technical processing failure.
 - `CANCELLED`: accepted cancellation before processing begins.
 
-Duplicate idempotency keys for the same authenticated customer and request body must return the same payment and must not duplicate balance movement or events.
+Duplicate idempotency keys for the same authenticated customer and request body must return the same payment and must not duplicate balance movement or events. Reusing an idempotency key with a different request body must be rejected as a conflict.
 
 ## Observability Requirements
 

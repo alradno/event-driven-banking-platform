@@ -129,7 +129,7 @@ Local URLs:
 | `make seed` | Print deterministic users and account IDs |
 | `make test` | Run Java unit tests and AI rule-engine tests |
 | `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
-| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification DLQ/replay, metrics, trace export, and AI evidence through Compose |
+| `make e2e-test` | Prove auth, ownership, payment idempotency/conflicts, negative payment outcomes, Kafka, audit, notification DLQ/replay safety, metrics, trace export, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
 | `make helm-template` | Render the Kubernetes Helm chart when `helm` is available |
@@ -173,9 +173,9 @@ Current test coverage includes:
 - Notification failure switch.
 - AI assistant evidence/no-evidence behavior.
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
-- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
+- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, idempotency conflict protection, rejected payment outcomes, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, no-match replay safety, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
 
-Planned expansion includes Testcontainers integration tests, richer negative payment workflow tests, and schema compatibility checks.
+Planned expansion includes Testcontainers/WireMock integration tests, schema compatibility checks, and cluster smoke coverage for the Helm chart.
 
 ## Documentation
 
@@ -199,6 +199,6 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 ## Roadmap
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
-- Expand E2E assertions for richer replay safety checks and negative payment workflow cases.
+- Add WireMock coverage for downstream HTTP failure contracts.
 - Add a real Kubernetes cluster smoke test and production values examples for managed dependencies.
 - Add schema compatibility checks for event envelope versions.
