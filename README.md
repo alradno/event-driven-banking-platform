@@ -129,7 +129,7 @@ Local URLs:
 | `make seed` | Print deterministic users and account IDs |
 | `make test` | Run Java unit tests and AI rule-engine tests |
 | `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
-| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification DLQ/replay, metrics, and AI evidence through Compose |
+| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification DLQ/replay, metrics, trace export, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
 | `make simulate-payment-stuck` | Send stuck-payment evidence to AI assistant |
@@ -154,7 +154,7 @@ See [docs/owasp-api-security-map.md](docs/owasp-api-security-map.md).
 
 ## Observability
 
-Each Java service exposes `/actuator/health` and `/actuator/prometheus`. Compose starts Prometheus, Grafana, and an OpenTelemetry collector. The initial dashboard covers HTTP request rates and Kafka/payment signals; alert rule examples live in [docs/alerts/prometheus-rules.yml](docs/alerts/prometheus-rules.yml).
+Each Java service exposes `/actuator/health` and `/actuator/prometheus`, emits Micrometer/OpenTelemetry spans to the local collector over OTLP, and propagates correlation/trace IDs through HTTP and event metadata. Payment spans are tagged with `banking.correlation_id` and `banking.trace_id`; the Compose E2E contract checks the collector output for the exported trace tag. The initial dashboard covers HTTP request rates and Kafka/payment signals; alert rule examples live in [docs/alerts/prometheus-rules.yml](docs/alerts/prometheus-rules.yml).
 
 ## AI Incident Assistant
 
@@ -170,7 +170,7 @@ Current test coverage includes:
 - Notification failure switch.
 - AI assistant evidence/no-evidence behavior.
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
-- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, gateway metrics, and AI report evidence.
+- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
 
 Planned expansion includes Testcontainers integration tests, richer negative payment workflow tests, and schema compatibility checks.
 
@@ -195,7 +195,7 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 ## Roadmap
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
-- Expand E2E assertions for trace export inspection and richer replay safety checks.
+- Expand E2E assertions for richer replay safety checks and negative payment workflow cases.
 - Add richer Grafana dashboards and captured screenshots.
 - Add schema compatibility checks for event envelope versions.
 - Add Kubernetes manifests and Helm chart after the Compose MVP is fully verified.

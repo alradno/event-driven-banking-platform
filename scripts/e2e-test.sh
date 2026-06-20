@@ -47,6 +47,10 @@ psql_scalar() {
   compose_exec postgres psql -U banking -d "$db" -tA -c "$sql" | tr -d '\r' | tail -n 1
 }
 
+trace_exported() {
+  compose_logs otel-collector 20000 2>/dev/null | grep -Fq "banking.trace_id: Str($TRACE_ID)"
+}
+
 curl -fsS "$GATEWAY_URL/actuator/health" >/dev/null
 curl -fsS "$AI_URL/health" >/dev/null
 
@@ -134,6 +138,10 @@ AUDITS="$(curl -fsS "$GATEWAY_URL/audits?correlationId=$CORRELATION_ID" \
   -H "Authorization: Bearer $AUDITOR_TOKEN")"
 printf '%s' "$AUDITS" | json_assert 'any(item["eventType"] == "payment.completed" and item["traceId"].startswith("trace-e2e-") for item in data)'
 
+wait_for "OpenTelemetry trace export" \
+  "trace_exported" 60 2 \
+  || fail "OpenTelemetry collector logs did not include banking.trace_id=$TRACE_ID"
+
 PROMETHEUS="$(curl -fsS "$GATEWAY_URL/actuator/prometheus" \
   -H "Authorization: Bearer $SRE_TOKEN")"
 printf '%s' "$PROMETHEUS" | grep -q 'http_server_requests_seconds' \
@@ -208,4 +216,4 @@ if ! grep -q '^429$' "$RATE_FILE"; then
   fail "expected at least one 429 from Redis rate limiting; statuses: $(sort "$RATE_FILE" | uniq -c | tr '\n' ' ')"
 fi
 
-echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER dlqReplay=ok."
+echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER traceExport=ok dlqReplay=ok."

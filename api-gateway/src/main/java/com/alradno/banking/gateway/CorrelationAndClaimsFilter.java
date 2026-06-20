@@ -1,8 +1,10 @@
 package com.alradno.banking.gateway;
 
 import com.alradno.banking.common.http.Correlation;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import java.security.Principal;
-import java.util.UUID;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -15,10 +17,17 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class CorrelationAndClaimsFilter implements GlobalFilter, Ordered {
+    private final ObjectProvider<Tracer> tracer;
+
+    public CorrelationAndClaimsFilter(ObjectProvider<Tracer> tracer) {
+        this.tracer = tracer;
+    }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String correlationId = Correlation.presentOrNew(exchange.getRequest().getHeaders().getFirst(Correlation.CORRELATION_ID));
         String traceId = Correlation.presentOrNew(exchange.getRequest().getHeaders().getFirst(Correlation.TRACE_ID));
+        tagCurrentSpan(correlationId, traceId);
 
         return exchange.getPrincipal()
                 .cast(Principal.class)
@@ -53,6 +62,15 @@ public class CorrelationAndClaimsFilter implements GlobalFilter, Ordered {
             return Mono.empty();
         });
         return exchange.mutate().request(request.build()).build();
+    }
+
+    private void tagCurrentSpan(String correlationId, String traceId) {
+        Tracer activeTracer = tracer.getIfAvailable();
+        Span currentSpan = activeTracer == null ? null : activeTracer.currentSpan();
+        if (currentSpan != null) {
+            currentSpan.tag("banking.correlation_id", correlationId);
+            currentSpan.tag("banking.trace_id", traceId);
+        }
     }
 
     private String claimOrDefault(JwtAuthenticationToken token, String claimName, String fallback) {
