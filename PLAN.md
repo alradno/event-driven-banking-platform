@@ -45,11 +45,10 @@
 - Add architecture and sequence diagrams, screenshots, Postman collection, production-readiness notes, limitations, roadmap, and CV/LinkedIn summary.
 - Add Kubernetes/Helm only after the Compose MVP is green.
 
-## Current Branch Increment
+## Next Branch Increment
 
-The current branch adds a reproducible Kubernetes smoke path and documents the local cluster blocker:
+The next branch should run the final completion audit and close the remaining environment-dependent Kubernetes evidence:
 
-- Add `make k8s-validate` for strict Helm linting and offline rendered-manifest contract checks.
-- Add a `make k8s-smoke` target backed by a script that validates the Helm chart against a configured Kubernetes API.
-- Support server-side dry-run by default and opt-in install/rollout smoke with `K8S_SMOKE_APPLY=true`.
-- Record the current local blocker precisely: `kubectl` is installed, but no current Kubernetes context is configured.
+- Re-run the objective checklist against `README.md`, `SPEC.md`, `STATUS.md`, and local evidence.
+- If a Kubernetes cluster context is available, run `make k8s-smoke` or `K8S_SMOKE_APPLY=true make k8s-smoke` with pullable images and external dependencies.
+- If no cluster context is available, keep the blocker explicit and do not mark the full objective complete.

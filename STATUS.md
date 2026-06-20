@@ -108,3 +108,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Blocked as expected: `make k8s-smoke` cannot run locally yet because `kubectl current-context` is not set.
 - Passed: `make test`, `podman compose config`, and `git diff --check` after the Kubernetes smoke readiness branch changes.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Kubernetes smoke readiness branch changes.
+- Completed: Kubernetes smoke readiness branch merged back to `master`.
