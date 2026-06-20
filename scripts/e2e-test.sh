@@ -299,4 +299,8 @@ if ! grep -q '^429$' "$RATE_FILE"; then
   fail "expected at least one 429 from Redis rate limiting; statuses: $(sort "$RATE_FILE" | uniq -c | tr '\n' ' ')"
 fi
 
-echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER traceExport=ok negativePayments=ok dlqReplay=ok replaySafety=ok."
+wait_for "security audit records for 401, 403, and 429" \
+  "[ \"\$(psql_scalar audit_db \"select count(distinct event_type) from audit_records where event_type in ('security.login_failed', 'security.access_denied', 'security.rate_limit_exceeded');\")\" -ge 3 ]" 45 1 \
+  || fail "security events for login_failed/access_denied/rate_limit_exceeded were not audited"
+
+echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER traceExport=ok negativePayments=ok dlqReplay=ok replaySafety=ok securityAudit=ok."

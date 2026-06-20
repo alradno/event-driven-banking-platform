@@ -78,6 +78,7 @@ services:
       SERVER_PORT: 8080
       KEYCLOAK_ISSUER_URI: http://localhost:18089/realms/banking
       KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/banking/protocol/openid-connect/certs
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       REDIS_HOST: redis
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces

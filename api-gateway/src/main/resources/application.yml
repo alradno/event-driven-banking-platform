@@ -5,6 +5,11 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   security:
     oauth2:
       resourceserver:
@@ -27,27 +32,27 @@ spring:
         - id: customer-service
           uri: ${CUSTOMER_SERVICE_URL:http://customer-service:8080}
           predicates:
-            - Path=/customers/**
+            - Path=/customers,/customers/**
         - id: account-service
           uri: ${ACCOUNT_SERVICE_URL:http://account-service:8080}
           predicates:
-            - Path=/accounts/**
+            - Path=/accounts,/accounts/**
         - id: payment-service
           uri: ${PAYMENT_SERVICE_URL:http://payment-service:8080}
           predicates:
-            - Path=/payments/**
+            - Path=/payments,/payments/**
         - id: audit-service
           uri: ${AUDIT_SERVICE_URL:http://audit-service:8080}
           predicates:
-            - Path=/audits/**
+            - Path=/audits,/audits/**
         - id: notification-demo
           uri: ${NOTIFICATION_SERVICE_URL:http://notification-service:8080}
           predicates:
-            - Path=/demo/**
+            - Path=/demo,/demo/**
         - id: ai-incident-assistant
           uri: ${AI_INCIDENT_ASSISTANT_URL:http://ai-incident-assistant:8090}
           predicates:
-            - Path=/ai/**
+            - Path=/ai,/ai/**
           filters:
             - RewritePath=/ai/(?<segment>.*), /$\{segment}
 management:

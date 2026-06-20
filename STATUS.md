@@ -32,6 +32,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Kubernetes API smoke passed on temporary `kind`/Podman cluster on branch `docs/kind-k8s-smoke-evidence`.
 - Local CI parity target added and passed on branch `ci/local-ci-parity`.
 - GitHub Actions and Jenkins now reuse the local CI parity flow on branch `ci/reuse-local-parity-flow`.
+- Gateway security events for 401, 403, and 429 responses now publish to Kafka and are audited on branch `feat/security-events-audit`.
 
 ## In Progress
 
@@ -128,3 +129,5 @@ The repository started from the initial `README.md` only. The first implementati
 - Updated: GitHub Actions and Jenkins delegate to `make ci-local`, so remote CI uses the same readiness-aware scan/test/build/smoke/E2E flow that passed locally.
 - Passed: `make ci-local` again after switching GitHub Actions and Jenkins to the shared parity flow.
 - Completed: remote CI parity branch merged back to `master`.
+- Passed: `./mvnw -pl api-gateway -am test`; gateway security authorization, path matching, correlation propagation, and rate-limit security event coverage passed.
+- Passed: `make ci-local`; repository scan, Java and Python tests, clean image build, Compose readiness, smoke test, and E2E completed with audited gateway security events for 401, 403, and 429 (`securityAudit=ok`).

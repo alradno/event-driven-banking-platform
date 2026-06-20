@@ -4,6 +4,7 @@ import com.alradno.banking.common.http.Correlation;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import java.security.Principal;
+import java.util.Optional;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -30,9 +31,13 @@ public class CorrelationAndClaimsFilter implements GlobalFilter, Ordered {
         tagCurrentSpan(correlationId, traceId);
 
         return exchange.getPrincipal()
-                .cast(Principal.class)
-                .flatMap(principal -> chain.filter(withHeaders(exchange, correlationId, traceId, principal)))
-                .switchIfEmpty(chain.filter(withHeaders(exchange, correlationId, traceId, null)));
+                .map(Optional::of)
+                .defaultIfEmpty(Optional.empty())
+                .flatMap(principal -> chain.filter(withHeaders(
+                        exchange,
+                        correlationId,
+                        traceId,
+                        principal.orElse(null))));
     }
 
     private ServerWebExchange withHeaders(
