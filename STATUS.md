@@ -63,3 +63,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make e2e-test`; additionally forced notification failure, observed `bank.payment.events.notification-service.dlq` growth, replayed one matching correlation ID, and observed `bank.notification.events` growth after replay.
 - Passed: `make simulate-notification-failure`; real failure produced a DLQ record, replayed one message, and the AI report cited DLQ evidence with the trace ID.
 - Passed: all five simulation targets: payment stuck, notification failure, auth failure, high latency, and Kafka lag.
+- Completed: notification DLQ replay branch merged back to `master`.
