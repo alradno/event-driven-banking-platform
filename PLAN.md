@@ -47,9 +47,10 @@
 
 ## Current Branch Increment
 
-The current branch targets Kubernetes and Helm packaging:
+The current branch targets negative E2E coverage for payment edge cases and DLQ replay safety:
 
-- Add a Helm chart for the gateway, Java services, notification service, and AI incident assistant.
-- Parameterize external PostgreSQL, Kafka, Redis, Keycloak, and OpenTelemetry endpoints.
-- Provide render/install documentation and a `make helm-template` helper.
-- Keep `STATUS.md` current with local evidence before merging back to `master`.
+- Verify reused idempotency keys with changed request bodies fail with `409` instead of creating another payment.
+- Exercise rejected payment outcomes for insufficient funds, frozen source accounts, and ownership mismatch through the Compose gateway path.
+- Assert rejected payments create audit records with their correlation IDs.
+- Prove no-match notification DLQ replay reports zero replays and does not publish a notification event.
+- Keep `README.md` and `STATUS.md` current with local evidence before merging back to `master`.

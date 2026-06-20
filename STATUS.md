@@ -24,6 +24,7 @@ The repository started from the initial `README.md` only. The first implementati
 - OpenTelemetry trace export E2E coverage added on branch `test/trace-export-e2e`.
 - Observability dashboard, alert loading, and screenshot evidence added on branch `feat/observability-dashboards-alerts`.
 - Kubernetes/Helm service chart added on branch `feat/kubernetes-helm`.
+- Negative payment and replay-safety E2E coverage added on branch `test/payment-negative-e2e`.
 
 ## In Progress
 
@@ -31,7 +32,9 @@ The repository started from the initial `README.md` only. The first implementati
 
 ## Not Yet Complete
 
-- More negative and failure-mode E2E coverage for payment edge cases and replay safety.
+- Testcontainers/WireMock integration coverage is not yet implemented beyond the dependency BOM.
+- Event schema compatibility checks are not yet automated.
+- A real Kubernetes cluster smoke test has not been run; Helm is currently render/lint verified only.
 
 ## Local Tooling Observed
 
@@ -81,3 +84,10 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make helm-template` with `HELM` pointed at the containerized Helm runner.
 - Passed: `make test` after adding the Helm chart and Kubernetes documentation.
 - Completed: Kubernetes/Helm chart branch merged back to `master`.
+- Passed: `sh -n scripts/e2e-test.sh`.
+- Passed: `make e2e-test`; additionally verified idempotency key reuse with a changed body returns `409`, insufficient-funds/frozen-source/ownership-mismatch payments are rejected and audited, and no-match notification DLQ replay returns zero without publishing a notification event.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and the hardened E2E runtime contract completed with negative payment and replay-safety assertions.
+- Passed: `make test` after adding the negative E2E coverage.
+- Passed: `podman compose config`.
+- Passed: `git diff --check`.
+- Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches.
