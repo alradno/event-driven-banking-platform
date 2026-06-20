@@ -11,7 +11,7 @@ scan_pattern() {
   pattern="$2"
   shift 2
   set +e
-  git grep -I -n -E -e "$pattern" -- . ':!target/**' ':!*.class' "$@"
+  git grep -I -n -E -e "$pattern" -- . ':!target/**' ':!*.class' ':!scripts/ci-scan.sh' "$@"
   status=$?
   set -e
   if [ "$status" -eq 0 ]; then
