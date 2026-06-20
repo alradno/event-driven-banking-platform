@@ -47,9 +47,9 @@
 
 ## Current Branch Increment
 
-The current branch targets OpenTelemetry trace-export evidence:
+The current branch targets observability dashboard and alert evidence:
 
-- Add Micrometer/OpenTelemetry tracing dependencies and OTLP exporter configuration to each Java service.
-- Tag payment request spans with `banking.correlation_id` and `banking.trace_id`.
-- Prove in the Compose E2E contract that the local OpenTelemetry collector exports the expected banking trace tag.
+- Expand the provisioned Grafana banking dashboard with service availability, HTTP, payment, Kafka, JVM, CPU, and log panels.
+- Mount and load Prometheus alert rules for service down, gateway errors/auth spikes, latency, payment failures, Kafka lag, notification listener failures, and DB pool saturation.
+- Capture a local dashboard screenshot after running the Compose E2E flow.
 - Keep `STATUS.md` current with local evidence before merging back to `master`.

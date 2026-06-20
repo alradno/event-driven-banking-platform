@@ -1,24 +1,79 @@
 groups:
   - name: banking-platform
     rules:
+      - alert: ServiceDown
+        expr: up{job=~"api-gateway|customer-service|account-service|payment-service|audit-service|notification-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} is not scrapeable by Prometheus."
+          runbook: "docs/runbooks/high-latency.md"
+
       - alert: HighGatewayErrorRate
-        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) > 1
+        expr: sum(rate(http_server_requests_seconds_count{job="api-gateway",status=~"5.."}[5m])) > 0.1
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: Gateway or service error rate is elevated.
+          summary: "Gateway 5xx responses are elevated."
+          runbook: "docs/runbooks/high-latency.md"
+
       - alert: AuthenticationSpike
-        expr: sum(rate(http_server_requests_seconds_count{status=~"401|403"}[5m])) > 3
+        expr: sum(rate(http_server_requests_seconds_count{job="api-gateway",status=~"401|403"}[5m])) > 0.2
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: Authentication or authorization failures spiked.
-      - alert: KafkaLagOrDlq
-        expr: sum(kafka_consumer_records_lag_max) > 100
+          summary: "Authentication or authorization failures spiked at the gateway."
+          runbook: "docs/runbooks/auth-failure.md"
+
+      - alert: HighHttpLatency
+        expr: |
+          (
+            sum by (job) (rate(http_server_requests_seconds_sum[5m]))
+            /
+            sum by (job) (rate(http_server_requests_seconds_count[5m]))
+          ) > 0.5
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: Kafka lag or DLQ pressure requires investigation.
+          summary: "{{ $labels.job }} average HTTP latency is above 500ms."
+          runbook: "docs/runbooks/high-latency.md"
+
+      - alert: PaymentFailures
+        expr: sum(rate(http_server_requests_seconds_count{job="payment-service",uri="/payments",status!~"2.."}[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Payment API failures are elevated."
+          runbook: "docs/runbooks/payment-failure.md"
+
+      - alert: KafkaConsumerLag
+        expr: max(kafka_consumer_fetch_manager_records_lag_max) > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag is above 100 records."
+          runbook: "docs/runbooks/kafka-lag.md"
+
+      - alert: NotificationListenerFailures
+        expr: sum(rate(spring_kafka_listener_seconds_count{job="notification-service",result="failure"}[5m])) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Notification listener failures are being observed."
+          runbook: "docs/runbooks/kafka-lag.md"
+
+      - alert: DatabasePoolSaturation
+        expr: max by (job) (hikaricp_connections_active / hikaricp_connections_max) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.job }} database pool is above 90% utilization."
+          runbook: "docs/runbooks/db-connectivity.md"

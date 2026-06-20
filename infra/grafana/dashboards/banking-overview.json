@@ -1,21 +1,323 @@
 {
-  "annotations": {"list": []},
+  "annotations": {
+    "list": []
+  },
   "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
   "panels": [
     {
-      "type": "timeseries",
-      "title": "HTTP server requests",
-      "targets": [{"expr": "sum(rate(http_server_requests_seconds_count[5m])) by (application, status)"}],
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "up{job=~\"api-gateway|customer-service|account-service|payment-service|audit-service|notification-service\"}",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Service Availability",
+      "type": "stat"
     },
     {
-      "type": "timeseries",
-      "title": "Payment errors and DLQ signals",
-      "targets": [{"expr": "sum(rate(kafka_consumer_records_consumed_total[5m])) by (application)"}],
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum by (job, status) (rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "{{job}} {{status}}",
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP Request Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum by (job, status) (rate(http_server_requests_seconds_count{status=~\"401|403|429|5..\"}[5m]))",
+          "legendFormat": "{{job}} {{status}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors, Auth Denials, Rate Limits",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum by (job) (rate(http_server_requests_seconds_sum[5m])) / sum by (job) (rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "{{job}} avg",
+          "refId": "A"
+        },
+        {
+          "expr": "max by (job) (http_server_requests_seconds_max)",
+          "legendFormat": "{{job}} max",
+          "refId": "B"
+        }
+      ],
+      "title": "HTTP Latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(http_server_requests_seconds_count{job=\"payment-service\",uri=\"/payments\"}[5m]))",
+          "legendFormat": "payment {{status}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (status) (rate(http_client_requests_seconds_count{job=\"payment-service\",client_name=\"account-service\"}[5m]))",
+          "legendFormat": "account client {{status}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Payment Throughput and Account Calls",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "records/sec"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "id": 6,
+      "targets": [
+        {
+          "expr": "sum by (job, result) (rate(spring_kafka_listener_seconds_count[5m]))",
+          "legendFormat": "{{job}} {{result}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Kafka Listener Results",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "records"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "id": 7,
+      "targets": [
+        {
+          "expr": "max by (job, client_id) (kafka_consumer_fetch_manager_records_lag_max)",
+          "legendFormat": "{{job}} {{client_id}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Kafka Consumer Lag",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 19
+      },
+      "id": 8,
+      "targets": [
+        {
+          "expr": "sum by (job) (jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "{{job}} heap",
+          "refId": "A"
+        }
+      ],
+      "title": "JVM Heap Used",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 19
+      },
+      "id": 9,
+      "targets": [
+        {
+          "expr": "process_cpu_usage",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Process CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "events/sec"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 19
+      },
+      "id": 10,
+      "targets": [
+        {
+          "expr": "sum by (job, level) (rate(logback_events_total{level=~\"error|warn\"}[5m]))",
+          "legendFormat": "{{job}} {{level}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Warn and Error Logs",
+      "type": "timeseries"
     }
   ],
+  "refresh": "10s",
   "schemaVersion": 39,
+  "tags": [
+    "banking",
+    "observability",
+    "portfolio"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
   "title": "Banking Platform Overview",
-  "version": 1
+  "uid": "banking-platform-overview",
+  "version": 2,
+  "weekStart": ""
 }

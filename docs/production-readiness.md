@@ -8,5 +8,6 @@ This portfolio system is intentionally local-first. Before production, the follo
 - Add schema migrations with Flyway or Liquibase.
 - Add Kafka schema registry or a formal compatibility verifier.
 - Add real alert routing and on-call ownership.
+- Move actuator metrics to a private management port or internal network policy before exposing the gateway outside a local demo.
 - Add SAST, dependency, and image vulnerability gates with organization policies.
 - Add backup, restore, DR, and load-test evidence.

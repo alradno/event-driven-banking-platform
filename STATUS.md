@@ -22,6 +22,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Compose E2E runtime contract added on branch `test/e2e-runtime-contract`.
 - Notification DLQ replay support added on branch `feat/notification-dlq-replay`.
 - OpenTelemetry trace export E2E coverage added on branch `test/trace-export-e2e`.
+- Observability dashboard, alert loading, and screenshot evidence added on branch `feat/observability-dashboards-alerts`.
 
 ## In Progress
 
@@ -30,7 +31,6 @@ The repository started from the initial `README.md` only. The first implementati
 ## Not Yet Complete
 
 - More negative and failure-mode E2E coverage for payment edge cases and replay safety.
-- Complete dashboards, alerts, and screenshots.
 - Kubernetes/Helm.
 
 ## Local Tooling Observed
@@ -69,3 +69,9 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed with OpenTelemetry trace-export evidence.
 - Passed: all five simulation targets again after trace-export changes: payment stuck, notification failure, auth failure, high latency, and Kafka lag.
 - Completed: OpenTelemetry trace export E2E branch merged back to `master`.
+- Passed: `promtool check config /etc/prometheus/prometheus.yml`; Prometheus config loaded one rule file with eight alert rules.
+- Passed: Prometheus targets API reported `up=1` for gateway, customer, account, payment, audit, and notification services after permitting local demo metrics scraping.
+- Passed: Grafana API found provisioned dashboard `banking-platform-overview` with the expanded banking observability panels.
+- Captured: Grafana dashboard screenshot at `docs/screenshots/grafana-banking-overview.png` after running the Compose E2E flow.
+- Passed: `make test`.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed after dashboard/alert changes.
