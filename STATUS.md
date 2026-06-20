@@ -132,3 +132,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `./mvnw -pl api-gateway -am test`; gateway security authorization, path matching, correlation propagation, and rate-limit security event coverage passed.
 - Passed: `make ci-local`; repository scan, Java and Python tests, clean image build, Compose readiness, smoke test, and E2E completed with audited gateway security events for 401, 403, and 429 (`securityAudit=ok`).
 - Updated: local repository push configuration now targets `alradno` only; remote CI verification still requires a successful token-backed push and passing GitHub Actions run.
+- Blocked externally: token-backed Git HTTPS push as `alradno` returned GitHub `403`, including for a temporary empty-commit branch dry-run; a token with Git repository write permission is required to publish and trigger remote CI.
