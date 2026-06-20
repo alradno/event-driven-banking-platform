@@ -80,9 +80,12 @@ services:
       KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/banking/protocol/openid-connect/certs
       REDIS_HOST: redis
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     ports:
       - "${GATEWAY_PORT:-18080}:8080"
     depends_on:
+      - otel-collector
       - keycloak
       - redis
       - customer-service
@@ -103,7 +106,11 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     depends_on:
+      - otel-collector
       - postgres
       - kafka
 
@@ -118,7 +125,11 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     depends_on:
+      - otel-collector
       - postgres
       - kafka
 
@@ -134,7 +145,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       ACCOUNT_SERVICE_URL: http://account-service:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     depends_on:
+      - otel-collector
       - postgres
       - kafka
       - account-service
@@ -150,7 +165,11 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     depends_on:
+      - otel-collector
       - postgres
       - kafka
 
@@ -163,7 +182,11 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       DEMO_NOTIFICATION_FAILURE: ${DEMO_NOTIFICATION_FAILURE:-false}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
     depends_on:
+      - otel-collector
       - kafka
 
   ai-incident-assistant:

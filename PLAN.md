@@ -47,9 +47,9 @@
 
 ## Current Branch Increment
 
-The current branch targets notification failure-mode evidence:
+The current branch targets OpenTelemetry trace-export evidence:
 
-- Add an SRE-only demo replay path for notification DLQ records by correlation ID.
-- Prove notification retry, DLQ publication, replay back to `bank.payment.events`, and resulting notification publication in the Compose E2E contract.
-- Upgrade `make simulate-notification-failure` from a toggle-only demo to a real fail, DLQ, replay, and AI-evidence scenario.
+- Add Micrometer/OpenTelemetry tracing dependencies and OTLP exporter configuration to each Java service.
+- Tag payment request spans with `banking.correlation_id` and `banking.trace_id`.
+- Prove in the Compose E2E contract that the local OpenTelemetry collector exports the expected banking trace tag.
 - Keep `STATUS.md` current with local evidence before merging back to `master`.

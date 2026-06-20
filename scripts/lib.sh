@@ -54,6 +54,14 @@ compose_exec() {
   $COMPOSE_CMD exec -T "$service" "$@"
 }
 
+compose_logs() {
+  service="$1"
+  tail="${2:-5000}"
+  # Intentionally unquoted so callers can pass commands such as "docker compose".
+  # shellcheck disable=SC2086
+  $COMPOSE_CMD logs --tail="$tail" "$service" 2>&1
+}
+
 kafka_offset() {
   topic="$1"
   compose_exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic "$topic" 2>/dev/null \

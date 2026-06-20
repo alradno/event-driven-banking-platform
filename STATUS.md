@@ -21,6 +21,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Compose runtime hardened on branch `fix/compose-runtime-startup` for local Podman: Apache Kafka broker, high published ports, Keycloak import fixes, and gateway OIDC/JWK configuration.
 - Compose E2E runtime contract added on branch `test/e2e-runtime-contract`.
 - Notification DLQ replay support added on branch `feat/notification-dlq-replay`.
+- OpenTelemetry trace export E2E coverage added on branch `test/trace-export-e2e`.
 
 ## In Progress
 
@@ -28,7 +29,7 @@ The repository started from the initial `README.md` only. The first implementati
 
 ## Not Yet Complete
 
-- More negative and failure-mode E2E coverage, especially trace export inspection.
+- More negative and failure-mode E2E coverage for payment edge cases and replay safety.
 - Complete dashboards, alerts, and screenshots.
 - Kubernetes/Helm.
 
@@ -64,3 +65,6 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make simulate-notification-failure`; real failure produced a DLQ record, replayed one message, and the AI report cited DLQ evidence with the trace ID.
 - Passed: all five simulation targets: payment stuck, notification failure, auth failure, high latency, and Kafka lag.
 - Completed: notification DLQ replay branch merged back to `master`.
+- Passed: `make e2e-test`; additionally verified OpenTelemetry collector output contains the exported `banking.trace_id` tag for the Compose payment flow.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed with OpenTelemetry trace-export evidence.
+- Passed: all five simulation targets again after trace-export changes: payment stuck, notification failure, auth failure, high latency, and Kafka lag.
