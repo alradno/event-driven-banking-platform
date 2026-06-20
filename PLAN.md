@@ -45,11 +45,10 @@
 - Add architecture and sequence diagrams, screenshots, Postman collection, production-readiness notes, limitations, roadmap, and CV/LinkedIn summary.
 - Add Kubernetes/Helm only after the Compose MVP is green.
 
-## Current Branch Increment
+## Next Branch Increment
 
-The current branch targets the remaining test/compatibility hardening needed before the full objective can be called complete:
+The next branch should close or explicitly document the final completion gap before the full objective can be called complete:
 
-- Add real Testcontainers integration coverage for PostgreSQL and Kafka-backed service behavior.
-- Add WireMock coverage for downstream HTTP failure contracts where service-to-service calls are involved.
-- Add automated event envelope/schema compatibility checks for documented event versions.
-- Keep `README.md`, `SPEC.md`, and `STATUS.md` current with local evidence before merging back to `master`.
+- Run a real Kubernetes cluster smoke test for the Helm chart, or document the exact unavailable-environment blocker.
+- Run a final audit against the Codex objective and refresh `README.md`, `SPEC.md`, and `STATUS.md` with the remaining evidence.
+- Keep the work on a branch, verify locally, and merge back to `master` before any push.

@@ -98,3 +98,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and the Compose E2E runtime contract completed with the new Testcontainers/WireMock/schema coverage in place.
 - Passed: `make test`, `podman compose config`, and `git diff --check` after the Testcontainers/WireMock/schema branch changes.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Testcontainers/WireMock/schema branch changes.
+- Completed: Testcontainers/WireMock/schema compatibility branch merged back to `master`.
