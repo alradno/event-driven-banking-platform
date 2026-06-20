@@ -4,7 +4,7 @@ MVNW ?= ./mvnw
 PYTHON ?= python3
 HELM ?= helm
 
-.PHONY: up down seed test integration-test e2e-test demo logs smoke \
+.PHONY: up down seed scan test integration-test e2e-test demo logs smoke \
 	simulate-payment-stuck simulate-notification-failure simulate-auth-failure \
 	simulate-high-latency simulate-kafka-lag helm-lint helm-template \
 	k8s-validate k8s-smoke
@@ -17,6 +17,9 @@ down:
 
 seed:
 	./scripts/seed.sh
+
+scan:
+	./scripts/ci-scan.sh
 
 test:
 	$(MVNW) test

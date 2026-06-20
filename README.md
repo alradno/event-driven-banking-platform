@@ -127,6 +127,7 @@ Local URLs:
 | `make up` | Build and start the local stack |
 | `make down` | Stop and delete local volumes |
 | `make seed` | Print deterministic users and account IDs |
+| `make scan` | Run repository hygiene and secret-pattern scans used by CI/Jenkins |
 | `make test` | Run Java unit tests and AI rule-engine tests |
 | `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
 | `make e2e-test` | Prove auth, ownership, payment idempotency/conflicts, negative payment outcomes, Kafka, audit, notification DLQ/replay safety, metrics, trace export, and AI evidence through Compose |
