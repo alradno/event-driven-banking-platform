@@ -110,6 +110,7 @@ Local URLs:
 
 - Gateway as the sole public entry point.
 - JWT role enforcement and claim propagation.
+- Sanitized security events for `401`, `403`, and `429`, ingested by the audit trail.
 - Correlation and trace IDs propagated through HTTP, events, and audit.
 - Service-owned databases for customers, accounts, payments, and audit.
 - CHF/EUR/USD accounts with minor-unit balances and `ACTIVE/FROZEN/CLOSED` states.
@@ -180,7 +181,7 @@ Current test coverage includes:
 - Event envelope v1 compatibility fixtures with unknown payload-field tolerance and unsupported-version rejection.
 - Testcontainers integration tests for payment persistence against PostgreSQL, downstream account-service failures through WireMock, and notification Kafka forwarding/DLQ replay against a real broker.
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
-- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, idempotency conflict protection, rejected payment outcomes, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, no-match replay safety, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
+- Compose E2E runtime contract for 401/403/429, audited security events, ownership isolation, payment completion, idempotency conflict protection, rejected payment outcomes, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, no-match replay safety, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
 
 Planned expansion includes optional Kubernetes install/rollout smoke with external infrastructure and broader producer/consumer event compatibility fixtures.
 

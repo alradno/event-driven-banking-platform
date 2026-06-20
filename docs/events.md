@@ -13,6 +13,18 @@ All events use the envelope documented in `SPEC.md`. The current envelope versio
 | `bank.security.events` | api-gateway | audit-service |
 | `bank.notification.events` | notification-service | audit-service |
 
+## Security Events
+
+The gateway publishes sanitized security envelopes to `bank.security.events`:
+
+| Event | Trigger |
+| --- | --- |
+| `security.login_failed` | Missing or invalid bearer token returns `401`. |
+| `security.access_denied` | Authenticated principal lacks the required route role or scope and receives `403`. |
+| `security.rate_limit_exceeded` | Redis-backed gateway rate limiting returns `429`. |
+
+Security event payloads include request method, path, status, reason, and remote address only. They intentionally exclude bearer tokens and other sensitive values before the audit service stores the event.
+
 ## Retry and DLQ
 
 Notification failures are retried by `notification-service` and then sent to `bank.payment.events.notification-service.dlq`. The DLQ value preserves the original event envelope, including correlation and trace IDs.
