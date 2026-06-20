@@ -21,6 +21,7 @@ pipeline {
       steps {
         sh 'podman compose up -d'
         sh './scripts/smoke-test.sh'
+        sh './scripts/e2e-test.sh'
       }
       post {
         always {

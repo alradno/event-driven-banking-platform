@@ -27,6 +27,7 @@ jobs:
         run: |
           docker compose up -d
           ./scripts/smoke-test.sh
+          ./scripts/e2e-test.sh
       - name: Collect logs
         if: always()
         run: docker compose logs --tail=200

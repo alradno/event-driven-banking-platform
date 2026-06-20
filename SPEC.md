@@ -161,6 +161,7 @@ Required Make targets:
 - `simulate-kafka-lag`
 
 The repo must include OpenAPI, Postman collection, seed data, deterministic demos, unit tests, integration/security/E2E tests, CI, image builds, and Compose smoke testing.
+The `e2e-test` target should run against an already-started Compose stack and prove the runtime path across gateway, services, Kafka, audit, notification, metrics, and AI evidence.
 
 ## Done Criteria
 

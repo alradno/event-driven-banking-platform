@@ -19,15 +19,15 @@ The repository started from the initial `README.md` only. The first implementati
 - Rule-based FastAPI AI incident assistant implemented with evidence/no-evidence tests.
 - Docker Compose, Makefile, scripts, OpenAPI, Postman collection, runbooks, CI, and Jenkinsfile added.
 - Compose runtime hardened on branch `fix/compose-runtime-startup` for local Podman: Apache Kafka broker, high published ports, Keycloak import fixes, and gateway OIDC/JWK configuration.
+- Compose E2E runtime contract added on branch `test/e2e-runtime-contract`.
 
 ## In Progress
 
-- E2E tests that assert Kafka, audit, notification, metrics, traces, and gateway security behavior together.
 - Completion audit against the full portfolio objective.
 
 ## Not Yet Complete
 
-- Complete end-to-end tests.
+- More negative and failure-mode E2E coverage, especially retry/DLQ replay and trace export inspection.
 - Complete dashboards, alerts, and screenshots.
 - Kubernetes/Helm.
 
@@ -52,6 +52,8 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: AI assistant health at `http://localhost:18090/health`.
 - Passed: Keycloak password-grant token checks for `alice`, `support`, and `sre` after adding complete demo user profile fields.
 - Passed: `make smoke`; duplicate idempotency key returned the same payment ID and the AI incident endpoint returned evidence/likely causes.
-- Passed: `make integration-test`; Maven `verify -Pintegration` completed and smoke passed again.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed.
 - Passed: gateway log scan after smoke found no recurrence of the previous `RequestRateLimiterGatewayFilterFactory`/`ReadOnlyHttpHeaders` exception.
 - Completed: runtime fix branch merged back to `master`.
+- Passed: `make e2e-test`; verified 401, 403, 429, customer/account ownership isolation, payment completion and idempotency, outbox publication, Kafka payment offset growth, notification event publication, audit records by correlation/trace ID, gateway Prometheus metrics, and evidence-backed AI output.
+- Pending: merge E2E runtime contract branch back to `master`.

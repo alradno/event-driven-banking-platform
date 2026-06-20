@@ -47,10 +47,10 @@
 
 ## Current Branch Increment
 
-The current branch targets a meaningful foundation:
+The current branch targets E2E runtime evidence:
 
-- Documentation contract and ADRs.
-- Maven monorepo with runnable service code, not just empty scaffolding.
-- Payment idempotency/outbox slice.
-- Rule-based AI assistant.
-- Compose, Makefile, CI, and initial tests where local runtime permits.
+- Add a deterministic Compose E2E script.
+- Prove gateway auth failures, authorization failures, ownership isolation, and Redis rate limiting.
+- Prove payment idempotency, outbox publication, Kafka flow, audit persistence, notification publication, gateway metrics, and evidence-backed AI output.
+- Wire the E2E gate into `make integration-test`, GitHub Actions, and Jenkins.
+- Keep `STATUS.md` current with local evidence before merging back to `master`.
