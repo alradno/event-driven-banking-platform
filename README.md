@@ -172,10 +172,12 @@ Current test coverage includes:
 - Payment idempotency request hashing.
 - Notification failure switch.
 - AI assistant evidence/no-evidence behavior.
+- Event envelope v1 compatibility fixtures with unknown payload-field tolerance and unsupported-version rejection.
+- Testcontainers integration tests for payment persistence against PostgreSQL, downstream account-service failures through WireMock, and notification Kafka forwarding/DLQ replay against a real broker.
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
 - Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, idempotency conflict protection, rejected payment outcomes, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, no-match replay safety, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
 
-Planned expansion includes Testcontainers/WireMock integration tests, schema compatibility checks, and cluster smoke coverage for the Helm chart.
+Planned expansion includes cluster smoke coverage for the Helm chart and broader producer/consumer event compatibility fixtures.
 
 ## Documentation
 
@@ -198,7 +200,5 @@ Planned expansion includes Testcontainers/WireMock integration tests, schema com
 
 ## Roadmap
 
-- Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
-- Add WireMock coverage for downstream HTTP failure contracts.
 - Add a real Kubernetes cluster smoke test and production values examples for managed dependencies.
-- Add schema compatibility checks for event envelope versions.
+- Expand event compatibility fixtures across all producers and consumers.

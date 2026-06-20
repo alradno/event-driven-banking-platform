@@ -1,6 +1,6 @@
 # Event Compatibility
 
-All events use the envelope documented in `SPEC.md`. Consumers must ignore unknown payload fields and reject only unknown event envelope versions.
+All events use the envelope documented in `SPEC.md`. The current envelope version is `1`. Consumers must ignore unknown payload fields and reject unknown event envelope versions; automated v1 JSON fixtures in `banking-common` protect this wire shape.
 
 ## Topics
 

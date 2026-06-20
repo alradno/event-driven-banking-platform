@@ -1,0 +1,17 @@
+{
+  "eventId": "00000000-0000-0000-0000-000000000102",
+  "eventType": "security.access_denied",
+  "eventVersion": 1,
+  "occurredAt": "2026-06-20T10:01:00Z",
+  "producer": "api-gateway",
+  "correlationId": "fixture-correlation-security",
+  "causationId": "request/fixture",
+  "traceId": "fixture-trace-security",
+  "subject": "principal/alice",
+  "payload": {
+    "principal": "alice",
+    "route": "/audits",
+    "decision": "DENIED",
+    "schemaCompatibilityCanary": "payload consumers ignore unknown fields"
+  }
+}

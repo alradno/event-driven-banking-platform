@@ -45,9 +45,9 @@
 - Add architecture and sequence diagrams, screenshots, Postman collection, production-readiness notes, limitations, roadmap, and CV/LinkedIn summary.
 - Add Kubernetes/Helm only after the Compose MVP is green.
 
-## Next Branch Increment
+## Current Branch Increment
 
-The next branch targets the remaining test/compatibility hardening needed before the full objective can be called complete:
+The current branch targets the remaining test/compatibility hardening needed before the full objective can be called complete:
 
 - Add real Testcontainers integration coverage for PostgreSQL and Kafka-backed service behavior.
 - Add WireMock coverage for downstream HTTP failure contracts where service-to-service calls are involved.

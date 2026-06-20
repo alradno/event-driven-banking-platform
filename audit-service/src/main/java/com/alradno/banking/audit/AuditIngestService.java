@@ -1,5 +1,6 @@
 package com.alradno.banking.audit;
 
+import com.alradno.banking.common.events.EventCompatibility;
 import com.alradno.banking.common.events.EventEnvelope;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +37,7 @@ public class AuditIngestService {
     public void ingest(String raw) {
         try {
             EventEnvelope envelope = objectMapper.readValue(raw, EventEnvelope.class);
+            EventCompatibility.requireSupported(envelope);
             records.save(new AuditRecord(
                     UUID.randomUUID(),
                     envelope.eventId().toString(),

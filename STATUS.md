@@ -25,6 +25,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Observability dashboard, alert loading, and screenshot evidence added on branch `feat/observability-dashboards-alerts`.
 - Kubernetes/Helm service chart added on branch `feat/kubernetes-helm`.
 - Negative payment and replay-safety E2E coverage added on branch `test/payment-negative-e2e`.
+- Testcontainers/WireMock and event schema compatibility coverage added on branch `test/testcontainers-wiremock-schema`.
 
 ## In Progress
 
@@ -32,8 +33,6 @@ The repository started from the initial `README.md` only. The first implementati
 
 ## Not Yet Complete
 
-- Testcontainers/WireMock integration coverage is not yet implemented beyond the dependency BOM.
-- Event schema compatibility checks are not yet automated.
 - A real Kubernetes cluster smoke test has not been run; Helm is currently render/lint verified only.
 
 ## Local Tooling Observed
@@ -41,7 +40,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Java available locally: OpenJDK 25, compiling target Java 21.
 - Maven not installed locally; repository will include `./mvnw`.
 - Python available locally: Python 3.13.
-- Docker not installed locally; Podman is available.
+- Docker CLI not installed locally; Podman is available and exposes a Docker-compatible socket that Testcontainers can use.
 
 ## Completion Evidence Log
 
@@ -92,3 +91,10 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `git diff --check`.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches.
 - Completed: Negative payment E2E branch merged back to `master`.
+- Passed: `./mvnw -pl banking-common test`; event envelope v1 compatibility fixtures deserialize, unknown payload fields are preserved, and unsupported/missing envelope versions are rejected.
+- Passed: `./mvnw test`; unit suites passed and the new Testcontainers/WireMock IT classes compiled.
+- Passed: `./mvnw verify -Pintegration`; Testcontainers ran PostgreSQL-backed payment-service ITs with WireMock and Kafka-backed notification-service ITs against a real broker.
+- Passed: `make up` after rebuilding the changed Java service images; Postgres, Kafka, Redis, Keycloak, Java services, AI assistant, Prometheus, Grafana, and OTel collector started locally.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and the Compose E2E runtime contract completed with the new Testcontainers/WireMock/schema coverage in place.
+- Passed: `make test`, `podman compose config`, and `git diff --check` after the Testcontainers/WireMock/schema branch changes.
+- Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Testcontainers/WireMock/schema branch changes.
