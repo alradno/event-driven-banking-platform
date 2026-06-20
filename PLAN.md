@@ -45,10 +45,10 @@
 - Add architecture and sequence diagrams, screenshots, Postman collection, production-readiness notes, limitations, roadmap, and CV/LinkedIn summary.
 - Add Kubernetes/Helm only after the Compose MVP is green.
 
-## Current Branch Increment
+## Next Branch Increment
 
-The current branch closes the local CI scan gap before any push:
+The next branch should run only when external verification becomes available:
 
-- Add a repository scan gate for forbidden tracked artifacts and secret-pattern checks.
-- Run the scan in GitHub Actions and Jenkins before tests/build/smoke.
-- Keep remote CI verification pending until a push is explicitly approved and the workflow runs on GitHub.
+- With a configured Kubernetes context, run `make k8s-smoke`; with pullable images and external dependencies, run `K8S_SMOKE_APPLY=true make k8s-smoke`.
+- After an approved push, verify the GitHub Actions workflow on GitHub.
+- Once those two external checks pass, update `STATUS.md` and `docs/completion-audit.md` from partial to complete.
