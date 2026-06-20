@@ -4,15 +4,13 @@ Last reviewed: 2026-06-20
 
 ## Verdict
 
-The repository is runnable, documented, and locally verified for the Compose portfolio objective. The latest local parity run includes gateway-published security audit events for `401`, `403`, and `429` responses. The full objective is not marked complete yet because one check requires external state and repository write access that are not currently available in this local workspace:
-
-- Remote CI pass: not verified because local commits have not been pushed by a GitHub identity with repository write access.
+The repository is runnable, documented, locally verified, published to `alradno/event-driven-banking-platform`, and remotely verified by GitHub Actions for the Compose portfolio objective. The latest local parity run includes gateway-published security audit events for `401`, `403`, and `429` responses.
 
 ## Objective Coverage
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| Branch discipline | Complete locally | Major increments were developed on branches and merged back to `master`; no push was performed. |
+| Branch discipline | Complete | Major increments were developed on branches, merged back to `master`, and pushed to `alradno/event-driven-banking-platform`. |
 | Core stack | Complete locally | Java/Spring Boot Maven monorepo, Python FastAPI AI assistant, Gateway, Keycloak, Redis, Kafka, PostgreSQL, Compose, OTel, Prometheus, Grafana. |
 | Fresh clone | Complete locally | Local clone into `/tmp/event-driven-banking-fresh-clone.tanvj0` passed `make scan`, `make test`, `podman compose config`, and `make k8s-validate` with containerized Helm. |
 | Service set | Complete locally | Gateway, customer, account, payment, audit, notification, and AI assistant are implemented and run in Compose. |
@@ -23,16 +21,15 @@ The repository is runnable, documented, and locally verified for the Compose por
 | Observability | Complete locally | Metrics, trace propagation/export evidence, dashboards, alerts, screenshot, and runbooks are present. |
 | Tests | Complete locally | `make test`, `make integration-test`, Testcontainers/WireMock ITs, Compose smoke/E2E, and simulation targets have passing local evidence in `STATUS.md`. |
 | Kubernetes packaging | Complete locally | Helm lint/template, offline manifest contract validation, and `make k8s-smoke` server-side dry-run passed against a temporary `kind` cluster on Podman. Install/rollout smoke still requires pullable images and external infrastructure endpoints. |
-| CI/CD | Partially complete | GitHub Actions and Jenkinsfile delegate to the readiness-aware `make ci-local` flow for repository scans, tests, image builds, Compose smoke, and E2E; `make ci-local` passed locally after the security audit event work; remote CI pass is not verified because nothing was pushed by a GitHub identity with repository write access. |
+| CI/CD | Complete | GitHub Actions and Jenkinsfile delegate to the readiness-aware `make ci-local` flow for repository scans, tests, image builds, Compose smoke, and E2E; `make ci-local` passed locally after the security audit event work; GitHub Actions also passed on pushed `master`. |
 
-## Latest Local Evidence
+## Latest Evidence
 
 - `make ci-local` passed on `2026-06-20` with repository scan, Java and Python tests, clean image build, Compose readiness, smoke, and E2E.
 - The E2E output included `securityAudit=ok`, proving audited `security.login_failed`, `security.access_denied`, and `security.rate_limit_exceeded` records in `audit_db`.
 - `git diff --quiet f8ec282 e009fc6` returned success after merging `feat/security-events-audit`, proving the security-events merge tree matched the locally verified feature commit after rewriting unpublished local history to `alradno`.
-- `git log --format='%an <%ae> | %cn <%ce>' origin/master..master | sort | uniq -c` shows all unpublished commits authored and committed as `alradno <24854770+alradno@users.noreply.github.com>`.
-- The local repository push URL and credential username are scoped to `alradno`; the remote CI requirement still depends on a successful token-backed push and a passing GitHub Actions run.
-- A token-backed Git HTTPS push as `alradno` reached GitHub but returned `403`, including for a temporary empty-commit branch dry-run; the token needs Git repository write permission before remote CI can run.
+- The local repository push URL and credential username are scoped to `alradno`; token-backed HTTPS push to `origin/master` succeeded without storing credentials in repository or global Git config.
+- GitHub Actions CI completed successfully on the pushed `master` branch after publication to `alradno/event-driven-banking-platform`.
 
 ## Remaining External Checks
 
@@ -44,4 +41,4 @@ HELM_EXTRA_ARGS="-f deploy/helm/banking-platform/values-smoke.example.yaml" \
   make k8s-smoke
 ```
 
-After a push, verify the GitHub Actions workflow on the pushed branch before claiming remote CI completion. See [remote CI verification](remote-ci-verification.md).
+GitHub Actions verification has passed on the pushed `master` branch. See [remote CI verification](remote-ci-verification.md) for the repeatable verification workflow.

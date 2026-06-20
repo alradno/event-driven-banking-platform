@@ -131,5 +131,5 @@ The repository started from the initial `README.md` only. The first implementati
 - Completed: remote CI parity branch merged back to `master`.
 - Passed: `./mvnw -pl api-gateway -am test`; gateway security authorization, path matching, correlation propagation, and rate-limit security event coverage passed.
 - Passed: `make ci-local`; repository scan, Java and Python tests, clean image build, Compose readiness, smoke test, and E2E completed with audited gateway security events for 401, 403, and 429 (`securityAudit=ok`).
-- Updated: local repository push configuration now targets `alradno` only; remote CI verification still requires a successful token-backed push and passing GitHub Actions run.
-- Blocked externally: token-backed Git HTTPS push as `alradno` returned GitHub `403`, including for a temporary empty-commit branch dry-run; a token with Git repository write permission is required to publish and trigger remote CI.
+- Updated: local repository push configuration targets `alradno` only; token-backed HTTPS push to `origin/master` succeeded without storing credentials in repository or global Git config.
+- Passed: GitHub Actions CI completed successfully on the pushed `master` branch after publication to `alradno/event-driven-banking-platform`.
