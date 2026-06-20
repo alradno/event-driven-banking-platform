@@ -1,0 +1,17 @@
+.DS_Store
+.idea/
+.vscode/
+target/
+build/
+*.iml
+*.log
+.env
+.mvn/apache-maven-*/
+__pycache__/
+.pytest_cache/
+.venv/
+dist/
+htmlcov/
+node_modules/
+coverage/
+tmp/

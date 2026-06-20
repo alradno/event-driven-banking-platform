@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: Payment Service API
+  version: 0.1.0
+paths:
+  /payments:
+    post:
+      summary: Create an idempotent payment
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: {type: string}
+        - in: header
+          name: X-Correlation-Id
+          required: false
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentRequest"
+      responses:
+        "201":
+          description: Payment accepted or existing idempotent payment returned
+    get:
+      summary: List payments for authenticated customer
+      responses:
+        "200":
+          description: Payments
+  /payments/{id}:
+    get:
+      summary: Get one payment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        "200":
+          description: Payment
+    delete:
+      summary: Cancel a payment before processing
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: {type: string, format: uuid}
+      responses:
+        "200":
+          description: Cancelled payment
+components:
+  schemas:
+    PaymentRequest:
+      type: object
+      required: [sourceAccountId, targetAccountId, currency, amountMinor]
+      properties:
+        sourceAccountId: {type: string, format: uuid}
+        targetAccountId: {type: string, format: uuid}
+        currency: {type: string, enum: [CHF, EUR, USD]}
+        amountMinor: {type: integer, minimum: 1}
+        description: {type: string}

@@ -1,0 +1,21 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP server requests",
+      "targets": [{"expr": "sum(rate(http_server_requests_seconds_count[5m])) by (application, status)"}],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
+      "type": "timeseries",
+      "title": "Payment errors and DLQ signals",
+      "targets": [{"expr": "sum(rate(kafka_consumer_records_consumed_total[5m])) by (application)"}],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    }
+  ],
+  "schemaVersion": 39,
+  "title": "Banking Platform Overview",
+  "version": 1
+}

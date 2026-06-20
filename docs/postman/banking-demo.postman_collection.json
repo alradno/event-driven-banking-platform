@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "Event Driven Banking Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Keycloak token - alice",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/x-www-form-urlencoded"}],
+        "url": "{{keycloakUrl}}/realms/banking/protocol/openid-connect/token",
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "grant_type", "value": "password"},
+            {"key": "client_id", "value": "banking-gateway"},
+            {"key": "username", "value": "alice"},
+            {"key": "password", "value": "password"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{accessToken}}"},
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Idempotency-Key", "value": "postman-demo-1"},
+          {"key": "X-Correlation-Id", "value": "postman-correlation-1"}
+        ],
+        "url": "{{gatewayUrl}}/payments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"sourceAccountId\":\"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1\",\"targetAccountId\":\"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1\",\"currency\":\"CHF\",\"amountMinor\":1250,\"description\":\"postman transfer\"}"
+        }
+      }
+    },
+    {
+      "name": "AI incident analysis",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{sreToken}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{gatewayUrl}}/ai/incidents/analyze",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"metrics\":{\"payment.error_rate\":0.35},\"kafka\":{\"dlq_count\":2},\"traces\":[\"trace-postman\"],\"runbooks\":[\"runbooks/payment-failure.md\"]}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {"key": "gatewayUrl", "value": "http://localhost:8080"},
+    {"key": "keycloakUrl", "value": "http://localhost:8089"}
+  ]
+}

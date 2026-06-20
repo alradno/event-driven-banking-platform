@@ -1,0 +1,199 @@
+name: event-driven-banking-platform
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-banking}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-banking}
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.10
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+    ports:
+      - "19092:19092"
+      - "9644:9644"
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health --brokers=localhost:9092 | grep -q Healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./infra/keycloak:/opt/keycloak/data/import:ro
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: api-gateway
+    environment:
+      SERVER_PORT: 8080
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/banking
+      REDIS_HOST: redis
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak
+      - redis
+      - customer-service
+      - account-service
+      - payment-service
+      - audit-service
+      - notification-service
+      - ai-incident-assistant
+
+  customer-service:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: customer-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/customer_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+    depends_on:
+      - postgres
+      - redpanda
+
+  account-service:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: account-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/account_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+    depends_on:
+      - postgres
+      - redpanda
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: payment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      ACCOUNT_SERVICE_URL: http://account-service:8080
+    depends_on:
+      - postgres
+      - redpanda
+      - account-service
+
+  audit-service:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: audit-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/audit_db
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-banking}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-banking}
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+    depends_on:
+      - postgres
+      - redpanda
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: infra/docker/java-service.Dockerfile
+      args:
+        MODULE: notification-service
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+      DEMO_NOTIFICATION_FAILURE: ${DEMO_NOTIFICATION_FAILURE:-false}
+    depends_on:
+      - redpanda
+
+  ai-incident-assistant:
+    build:
+      context: ./ai-incident-assistant
+    environment:
+      RUNBOOK_DIR: /app/runbooks
+    ports:
+      - "8090:8090"
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.113.0
+    command: ["--config=/etc/otelcol/config.yml"]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./infra/otel-collector/config.yml:/etc/otelcol/config.yml:ro
