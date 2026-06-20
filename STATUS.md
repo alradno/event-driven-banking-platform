@@ -30,6 +30,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Completion audit added on branch `docs/final-objective-audit`.
 - Repository scan gate added on branch `ci/repository-scan-gate`.
 - Kubernetes API smoke passed on temporary `kind`/Podman cluster on branch `docs/kind-k8s-smoke-evidence`.
+- Local CI parity target added and passed on branch `ci/local-ci-parity`.
 
 ## In Progress
 
@@ -121,3 +122,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: fresh local clone from `/Users/aradlowskinova/Desktop/event-driven-banking-platform` into `/tmp/event-driven-banking-fresh-clone.tanvj0`; `make scan`, `make test`, `podman compose config`, and `make k8s-validate` with containerized Helm all passed without paid services or API keys.
 - Passed: temporary `kind` v0.32.0 cluster on Podman with Kubernetes node `v1.36.1`; `make k8s-smoke` using `alpine/helm:3.15.4` passed Helm lint and Kubernetes server-side dry-run against context `kind-banking-smoke`.
 - Completed: Kubernetes smoke evidence branch merged back to `master`.
+- Passed: `make ci-local`; repository scans, Java unit tests, AI assistant unit tests, image builds, Compose readiness checks, smoke test, and E2E runtime contract completed locally before any push.

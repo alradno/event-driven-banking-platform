@@ -129,6 +129,7 @@ Local URLs:
 | `make seed` | Print deterministic users and account IDs |
 | `make scan` | Run repository hygiene and secret-pattern scans used by CI/Jenkins |
 | `make test` | Run Java unit tests and AI rule-engine tests |
+| `make ci-local` | Run the local CI parity flow: scans, tests, image build, Compose smoke, and E2E |
 | `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
 | `make e2e-test` | Prove auth, ownership, payment idempotency/conflicts, negative payment outcomes, Kafka, audit, notification DLQ/replay safety, metrics, trace export, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
