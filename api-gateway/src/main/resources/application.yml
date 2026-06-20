@@ -43,7 +43,7 @@ spring:
         - id: notification-demo
           uri: ${NOTIFICATION_SERVICE_URL:http://notification-service:8080}
           predicates:
-            - Path=/demo/notification-failure
+            - Path=/demo/**
         - id: ai-incident-assistant
           uri: ${AI_INCIDENT_ASSISTANT_URL:http://ai-incident-assistant:8090}
           predicates:

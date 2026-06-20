@@ -12,6 +12,8 @@ Payments must be traceable and resilient. Directly publishing Kafka events insid
 
 Domain services publish versioned events to Kafka. `payment-service` persists payment state and an outbox row in the same PostgreSQL transaction. A background publisher sends unpublished outbox rows to Kafka and marks them published after broker acknowledgement.
 
+Notification failures use the Kafka listener retry handler and then publish the original payment event envelope to `bank.payment.events.notification-service.dlq`. A bounded SRE-only demo endpoint can replay DLQ entries by correlation ID back to `bank.payment.events` so the notification path can be proven end to end.
+
 ## Consequences
 
 - Payment state and event intent are atomic.

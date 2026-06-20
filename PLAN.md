@@ -47,10 +47,9 @@
 
 ## Current Branch Increment
 
-The current branch targets E2E runtime evidence:
+The current branch targets notification failure-mode evidence:
 
-- Add a deterministic Compose E2E script.
-- Prove gateway auth failures, authorization failures, ownership isolation, and Redis rate limiting.
-- Prove payment idempotency, outbox publication, Kafka flow, audit persistence, notification publication, gateway metrics, and evidence-backed AI output.
-- Wire the E2E gate into `make integration-test`, GitHub Actions, and Jenkins.
+- Add an SRE-only demo replay path for notification DLQ records by correlation ID.
+- Prove notification retry, DLQ publication, replay back to `bank.payment.events`, and resulting notification publication in the Compose E2E contract.
+- Upgrade `make simulate-notification-failure` from a toggle-only demo to a real fail, DLQ, replay, and AI-evidence scenario.
 - Keep `STATUS.md` current with local evidence before merging back to `master`.

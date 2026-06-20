@@ -20,6 +20,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Docker Compose, Makefile, scripts, OpenAPI, Postman collection, runbooks, CI, and Jenkinsfile added.
 - Compose runtime hardened on branch `fix/compose-runtime-startup` for local Podman: Apache Kafka broker, high published ports, Keycloak import fixes, and gateway OIDC/JWK configuration.
 - Compose E2E runtime contract added on branch `test/e2e-runtime-contract`.
+- Notification DLQ replay support added on branch `feat/notification-dlq-replay`.
 
 ## In Progress
 
@@ -27,7 +28,7 @@ The repository started from the initial `README.md` only. The first implementati
 
 ## Not Yet Complete
 
-- More negative and failure-mode E2E coverage, especially retry/DLQ replay and trace export inspection.
+- More negative and failure-mode E2E coverage, especially trace export inspection.
 - Complete dashboards, alerts, and screenshots.
 - Kubernetes/Helm.
 
@@ -57,3 +58,8 @@ The repository started from the initial `README.md` only. The first implementati
 - Completed: runtime fix branch merged back to `master`.
 - Passed: `make e2e-test`; verified 401, 403, 429, customer/account ownership isolation, payment completion and idempotency, outbox publication, Kafka payment offset growth, notification event publication, audit records by correlation/trace ID, gateway Prometheus metrics, and evidence-backed AI output.
 - Completed: E2E runtime contract branch merged back to `master`.
+- Passed: `./mvnw -pl notification-service -am test`; notification replay parser unit coverage passed.
+- Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed with notification DLQ replay evidence.
+- Passed: `make e2e-test`; additionally forced notification failure, observed `bank.payment.events.notification-service.dlq` growth, replayed one matching correlation ID, and observed `bank.notification.events` growth after replay.
+- Passed: `make simulate-notification-failure`; real failure produced a DLQ record, replayed one message, and the AI report cited DLQ evidence with the trace ID.
+- Passed: all five simulation targets: payment stuck, notification failure, auth failure, high latency, and Kafka lag.

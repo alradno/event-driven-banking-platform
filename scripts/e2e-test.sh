@@ -4,21 +4,26 @@ set -eu
 . "$(dirname "$0")/lib.sh"
 
 AI_URL="${AI_URL:-http://localhost:18090}"
-COMPOSE_CMD="${COMPOSE_CMD:-}"
-if [ -z "$COMPOSE_CMD" ]; then
-  if command -v podman-compose >/dev/null 2>&1; then
-    COMPOSE_CMD="podman-compose --no-ansi"
-  elif command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then
-    COMPOSE_CMD="podman compose --no-ansi"
-  else
-    COMPOSE_CMD="docker compose"
-  fi
-fi
+DLQ_TOPIC="bank.payment.events.notification-service.dlq"
+RATE_FILE=""
 
 fail() {
   echo "E2E test failed: $*" >&2
   exit 1
 }
+
+cleanup() {
+  if [ -n "$RATE_FILE" ]; then
+    rm -f "$RATE_FILE"
+  fi
+  if [ -n "${SRE_TOKEN:-}" ]; then
+    curl -sS -o /dev/null -X POST "$GATEWAY_URL/demo/notification-failure" \
+      -H "Authorization: Bearer $SRE_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{"enabled": false}' || true
+  fi
+}
+trap cleanup EXIT
 
 http_status() {
   curl -sS -o /dev/null -w "%{http_code}" "$@"
@@ -36,54 +41,10 @@ if not eval(expr, {"__builtins__": {}, "any": any, "all": all, "len": len}, {"da
 ' "$1"
 }
 
-json_value() {
-  python3 -c '
-import json
-import sys
-
-path = sys.argv[1].split(".")
-value = json.load(sys.stdin)
-for key in path:
-    if key:
-        value = value[key]
-print(value)
-' "$1"
-}
-
-compose_exec() {
-  service="$1"
-  shift
-  # Intentionally unquoted so callers can pass commands such as "docker compose".
-  # shellcheck disable=SC2086
-  $COMPOSE_CMD exec -T "$service" "$@"
-}
-
 psql_scalar() {
   db="$1"
   sql="$2"
   compose_exec postgres psql -U banking -d "$db" -tA -c "$sql" | tr -d '\r' | tail -n 1
-}
-
-kafka_offset() {
-  topic="$1"
-  compose_exec kafka /opt/kafka/bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic "$topic" \
-    | awk -F: -v topic="$topic" '$1 == topic { total += $3 } END { print total + 0 }'
-}
-
-wait_for() {
-  description="$1"
-  command="$2"
-  attempts="${3:-30}"
-  delay="${4:-1}"
-  i=1
-  while [ "$i" -le "$attempts" ]; do
-    if eval "$command" >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep "$delay"
-    i=$((i + 1))
-  done
-  fail "$description did not become true"
 }
 
 curl -fsS "$GATEWAY_URL/actuator/health" >/dev/null
@@ -93,6 +54,11 @@ ALICE_TOKEN="$(token_for alice)"
 BOB_TOKEN="$(token_for bob)"
 SRE_TOKEN="$(token_for sre)"
 AUDITOR_TOKEN="$(token_for auditor)"
+
+curl -fsS -X POST "$GATEWAY_URL/demo/notification-failure" \
+  -H "Authorization: Bearer $SRE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}' >/dev/null
 
 status="$(http_status "$GATEWAY_URL/payments")"
 [ "$status" = "401" ] || fail "expected unauthenticated /payments to return 401, got $status"
@@ -181,8 +147,54 @@ printf '%s' "$AI_REPORT" | json_assert 'data["severity"] == "high"'
 printf '%s' "$AI_REPORT" | json_assert '"payment-service" in data["affectedServices"] and "notification-service" in data["affectedServices"]'
 printf '%s' "$AI_REPORT" | json_assert 'data["evidence"] and data["likelyCauses"] and "trace-e2e-ai" in data["traceIds"] and data["runbooks"]'
 
+DLQ_OFFSET_BEFORE="$(kafka_offset "$DLQ_TOPIC")"
+DLQ_CORRELATION_ID="dlq-$CORRELATION_ID"
+DLQ_TRACE_ID="trace-$DLQ_CORRELATION_ID"
+DLQ_IDEMPOTENCY_KEY="e2e-dlq-key-$CORRELATION_ID"
+DLQ_PAYLOAD='{
+  "sourceAccountId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+  "targetAccountId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1",
+  "currency": "CHF",
+  "amountMinor": 17,
+  "description": "e2e dlq transfer"
+}'
+
+curl -fsS -X POST "$GATEWAY_URL/demo/notification-failure" \
+  -H "Authorization: Bearer $SRE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}' >/dev/null
+
+DLQ_PAYMENT="$(curl -fsS -X POST "$GATEWAY_URL/payments" \
+  -H "Authorization: Bearer $ALICE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "X-Correlation-Id: $DLQ_CORRELATION_ID" \
+  -H "X-Trace-Id: $DLQ_TRACE_ID" \
+  -H "Idempotency-Key: $DLQ_IDEMPOTENCY_KEY" \
+  -d "$DLQ_PAYLOAD")"
+DLQ_PAYMENT_STATUS="$(printf '%s' "$DLQ_PAYMENT" | json_value status)"
+[ "$DLQ_PAYMENT_STATUS" = "COMPLETED" ] || fail "expected completed DLQ demo payment, got $DLQ_PAYMENT_STATUS"
+
+wait_for "notification DLQ publish" \
+  "[ \"\$(kafka_offset '$DLQ_TOPIC')\" -gt \"$DLQ_OFFSET_BEFORE\" ]" 45 1 \
+  || fail "notification DLQ offset did not increase"
+
+curl -fsS -X POST "$GATEWAY_URL/demo/notification-failure" \
+  -H "Authorization: Bearer $SRE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}' >/dev/null
+
+REPLAY_NOTIFICATION_OFFSET_BEFORE="$(kafka_offset bank.notification.events)"
+REPLAY_RESPONSE="$(curl -fsS -X POST "$GATEWAY_URL/demo/notification-dlq/replay" \
+  -H "Authorization: Bearer $SRE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"correlationId\":\"$DLQ_CORRELATION_ID\",\"maxRecords\":1}")"
+printf '%s' "$REPLAY_RESPONSE" | json_assert 'data["replayed"] >= 1 and data["dlqTopic"].endswith(".dlq")'
+
+wait_for "notification DLQ replay publication" \
+  "[ \"\$(kafka_offset bank.notification.events)\" -gt \"$REPLAY_NOTIFICATION_OFFSET_BEFORE\" ]" 30 1 \
+  || fail "notification replay did not produce a notification event"
+
 RATE_FILE="$(mktemp)"
-trap 'rm -f "$RATE_FILE"' EXIT
 i=0
 while [ "$i" -lt 90 ]; do
   (
@@ -196,4 +208,4 @@ if ! grep -q '^429$' "$RATE_FILE"; then
   fail "expected at least one 429 from Redis rate limiting; statuses: $(sort "$RATE_FILE" | uniq -c | tr '\n' ' ')"
 fi
 
-echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER."
+echo "E2E test passed. Payment $PAYMENT_ID correlation=$CORRELATION_ID kafkaOffsets=$PAYMENT_OFFSET_BEFORE->$PAYMENT_OFFSET_AFTER dlqReplay=ok."

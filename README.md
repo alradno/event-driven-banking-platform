@@ -117,7 +117,7 @@ Local URLs:
 - Payment transitions: `CREATED`, `VALIDATED`, `PROCESSING`, `COMPLETED`, `REJECTED`, `FAILED`, `CANCELLED`.
 - Transactional outbox for payment events.
 - Audit consumer for business/security events.
-- Notification consumer with retry and DLQ.
+- Notification consumer with retry, DLQ, and SRE-triggered replay by correlation ID.
 - Rule-based AI assistant that only reports causes backed by supplied evidence.
 
 ## Make Targets
@@ -129,11 +129,11 @@ Local URLs:
 | `make seed` | Print deterministic users and account IDs |
 | `make test` | Run Java unit tests and AI rule-engine tests |
 | `make integration-test` | Run Maven integration phase, smoke test, and E2E runtime contract |
-| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification, metrics, and AI evidence through Compose |
+| `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification DLQ/replay, metrics, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
 | `make simulate-payment-stuck` | Send stuck-payment evidence to AI assistant |
-| `make simulate-notification-failure` | Enable notification failure switch and analyze DLQ evidence |
+| `make simulate-notification-failure` | Force a notification DLQ, replay it, and analyze DLQ evidence |
 | `make simulate-auth-failure` | Trigger an unauthenticated call and analyze auth failure evidence |
 | `make simulate-high-latency` | Analyze latency/database evidence |
 | `make simulate-kafka-lag` | Analyze Kafka lag evidence |
@@ -170,7 +170,7 @@ Current test coverage includes:
 - Notification failure switch.
 - AI assistant evidence/no-evidence behavior.
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
-- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, gateway metrics, and AI report evidence.
+- Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, gateway metrics, and AI report evidence.
 
 Planned expansion includes Testcontainers integration tests, richer negative payment workflow tests, and schema compatibility checks.
 
@@ -195,7 +195,7 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 ## Roadmap
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
-- Expand E2E assertions for retry/DLQ replay and trace export inspection.
+- Expand E2E assertions for trace export inspection and richer replay safety checks.
 - Add richer Grafana dashboards and captured screenshots.
 - Add schema compatibility checks for event envelope versions.
 - Add Kubernetes manifests and Helm chart after the Compose MVP is fully verified.
