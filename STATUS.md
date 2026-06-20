@@ -80,3 +80,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `helm template banking deploy/helm/banking-platform` using `alpine/helm:3.15.4`.
 - Passed: `make helm-template` with `HELM` pointed at the containerized Helm runner.
 - Passed: `make test` after adding the Helm chart and Kubernetes documentation.
+- Completed: Kubernetes/Helm chart branch merged back to `master`.
