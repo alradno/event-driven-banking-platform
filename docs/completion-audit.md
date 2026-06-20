@@ -32,6 +32,7 @@ The repository is runnable, documented, and locally verified for the Compose por
 - `git diff --quiet f8ec282 e009fc6` returned success after merging `feat/security-events-audit`, proving the security-events merge tree matched the locally verified feature commit after rewriting unpublished local history to `alradno`.
 - `git log --format='%an <%ae> | %cn <%ce>' origin/master..master | sort | uniq -c` shows all unpublished commits authored and committed as `alradno <24854770+alradno@users.noreply.github.com>`.
 - The local repository push URL and credential username are scoped to `alradno`; the remote CI requirement still depends on a successful token-backed push and a passing GitHub Actions run.
+- A token-backed Git HTTPS push as `alradno` reached GitHub but returned `403`, including for a temporary empty-commit branch dry-run; the token needs Git repository write permission before remote CI can run.
 
 ## Remaining External Checks
 
