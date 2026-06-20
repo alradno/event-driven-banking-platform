@@ -4,7 +4,7 @@ MVNW ?= ./mvnw
 PYTHON ?= python3
 HELM ?= helm
 
-.PHONY: up down seed scan test integration-test e2e-test demo logs smoke \
+.PHONY: up down seed scan test ci-local integration-test e2e-test demo logs smoke \
 	simulate-payment-stuck simulate-notification-failure simulate-auth-failure \
 	simulate-high-latency simulate-kafka-lag helm-lint helm-template \
 	k8s-validate k8s-smoke
@@ -24,6 +24,9 @@ scan:
 test:
 	$(MVNW) test
 	cd ai-incident-assistant && $(PYTHON) -m unittest discover -s tests
+
+ci-local:
+	COMPOSE="$(COMPOSE)" MVNW="$(MVNW)" PYTHON="$(PYTHON)" ./scripts/ci-local.sh
 
 integration-test:
 	$(MVNW) verify -Pintegration
