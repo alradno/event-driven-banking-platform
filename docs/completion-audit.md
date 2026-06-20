@@ -4,9 +4,9 @@ Last reviewed: 2026-06-20
 
 ## Verdict
 
-The repository is runnable, documented, and locally verified for the Compose portfolio objective. The full objective is not marked complete yet because one check requires external state that is not currently available in this local workspace:
+The repository is runnable, documented, and locally verified for the Compose portfolio objective. The full objective is not marked complete yet because one check requires external state and repository write access that are not currently available in this local workspace:
 
-- Remote CI pass: not verified because local commits have not been pushed.
+- Remote CI pass: not verified because local commits have not been pushed by a GitHub identity with repository write access.
 
 ## Objective Coverage
 
@@ -23,7 +23,7 @@ The repository is runnable, documented, and locally verified for the Compose por
 | Observability | Complete locally | Metrics, trace propagation/export evidence, dashboards, alerts, screenshot, and runbooks are present. |
 | Tests | Complete locally | `make test`, `make integration-test`, Testcontainers/WireMock ITs, Compose smoke/E2E, and simulation targets have passing local evidence in `STATUS.md`. |
 | Kubernetes packaging | Complete locally | Helm lint/template, offline manifest contract validation, and `make k8s-smoke` server-side dry-run passed against a temporary `kind` cluster on Podman. Install/rollout smoke still requires pullable images and external infrastructure endpoints. |
-| CI/CD | Partially complete | GitHub Actions and Jenkinsfile run repository scans, tests, image builds, and Compose smoke/E2E; `make ci-local` passed that flow locally; remote CI pass is not verified because nothing was pushed. |
+| CI/CD | Partially complete | GitHub Actions and Jenkinsfile delegate to the readiness-aware `make ci-local` flow for repository scans, tests, image builds, Compose smoke, and E2E; `make ci-local` passed locally; remote CI pass is not verified because nothing was pushed by a GitHub identity with repository write access. |
 
 ## Remaining External Checks
 
@@ -35,4 +35,4 @@ HELM_EXTRA_ARGS="-f deploy/helm/banking-platform/values-smoke.example.yaml" \
   make k8s-smoke
 ```
 
-After a push, verify the GitHub Actions workflow on the pushed branch before claiming remote CI completion.
+After a push, verify the GitHub Actions workflow on the pushed branch before claiming remote CI completion. See [remote CI verification](remote-ci-verification.md).

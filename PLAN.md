@@ -49,6 +49,6 @@
 
 The next branch should run only when external verification becomes available:
 
-- After an approved push, verify the GitHub Actions workflow on GitHub.
+- After a push from GitHub credentials with repository write access, verify the GitHub Actions workflow on GitHub.
 - Optionally run `K8S_SMOKE_APPLY=true make k8s-smoke` when pullable images and external infrastructure endpoints are available.
 - Once remote CI passes, update `STATUS.md` and `docs/completion-audit.md` from partial to complete.
