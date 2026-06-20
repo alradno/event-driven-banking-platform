@@ -154,7 +154,9 @@ See [docs/owasp-api-security-map.md](docs/owasp-api-security-map.md).
 
 ## Observability
 
-Each Java service exposes `/actuator/health` and `/actuator/prometheus`, emits Micrometer/OpenTelemetry spans to the local collector over OTLP, and propagates correlation/trace IDs through HTTP and event metadata. Payment spans are tagged with `banking.correlation_id` and `banking.trace_id`; the Compose E2E contract checks the collector output for the exported trace tag. The initial dashboard covers HTTP request rates and Kafka/payment signals; alert rule examples live in [docs/alerts/prometheus-rules.yml](docs/alerts/prometheus-rules.yml).
+Each Java service exposes `/actuator/health` and `/actuator/prometheus`, emits Micrometer/OpenTelemetry spans to the local collector over OTLP, and propagates correlation/trace IDs through HTTP and event metadata. Payment spans are tagged with `banking.correlation_id` and `banking.trace_id`; the Compose E2E contract checks the collector output for the exported trace tag. Prometheus loads the local alert rules from [docs/alerts/prometheus-rules.yml](docs/alerts/prometheus-rules.yml), and Grafana provisions the banking overview dashboard automatically.
+
+![Grafana banking overview](docs/screenshots/grafana-banking-overview.png)
 
 ## AI Incident Assistant
 
@@ -196,6 +198,5 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
 - Expand E2E assertions for richer replay safety checks and negative payment workflow cases.
-- Add richer Grafana dashboards and captured screenshots.
-- Add schema compatibility checks for event envelope versions.
 - Add Kubernetes manifests and Helm chart after the Compose MVP is fully verified.
+- Add schema compatibility checks for event envelope versions.

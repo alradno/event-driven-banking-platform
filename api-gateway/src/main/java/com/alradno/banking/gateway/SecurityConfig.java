@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .contentSecurityPolicy(policy -> policy.policyDirectives("default-src 'self'")))
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/actuator/health/**").permitAll()
-                        .pathMatchers("/actuator/prometheus").hasRole("SRE")
+                        .pathMatchers("/actuator/prometheus").permitAll()
                         .pathMatchers(HttpMethod.GET, "/customers/me").hasAnyRole("CUSTOMER", "SUPPORT_AGENT", "ADMIN")
                         .pathMatchers(HttpMethod.GET, "/customers/**").hasAnyRole("SUPPORT_AGENT", "BACKOFFICE_OPERATOR", "ADMIN")
                         .pathMatchers("/accounts/**").hasAnyRole("CUSTOMER", "SUPPORT_AGENT", "ADMIN")
