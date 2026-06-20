@@ -132,6 +132,7 @@ Local URLs:
 | `make e2e-test` | Prove auth, ownership, payment idempotency, Kafka, audit, notification DLQ/replay, metrics, trace export, and AI evidence through Compose |
 | `make demo` | Create an idempotent payment and AI incident report |
 | `make logs` | Follow Compose logs |
+| `make helm-template` | Render the Kubernetes Helm chart when `helm` is available |
 | `make simulate-payment-stuck` | Send stuck-payment evidence to AI assistant |
 | `make simulate-notification-failure` | Force a notification DLQ, replay it, and analyze DLQ evidence |
 | `make simulate-auth-failure` | Trigger an unauthenticated call and analyze auth failure evidence |
@@ -185,12 +186,13 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 - [OpenAPI](docs/openapi/payment-service.yaml)
 - [Postman collection](docs/postman/banking-demo.postman_collection.json)
 - [Runbooks](docs/runbooks)
+- [Kubernetes / Helm](docs/kubernetes-helm.md)
 - [Production readiness notes](docs/production-readiness.md)
 - [CV / LinkedIn summary](docs/cv-linkedin-summary.md)
 
 ## Limitations
 
-- Compose MVP is the current target; Kubernetes/Helm is intentionally deferred until Compose verification is green.
+- Compose remains the canonical local runtime; the Helm chart packages the application services for clusters with external backing infrastructure.
 - Database migrations currently rely on Hibernate `ddl-auto` for early MVP speed; Flyway/Liquibase is planned.
 - The AI assistant is deterministic and rule-based first; model-provider support is optional future work.
 
@@ -198,5 +200,5 @@ Planned expansion includes Testcontainers integration tests, richer negative pay
 
 - Add Testcontainers integration tests for PostgreSQL, Kafka, and gateway security.
 - Expand E2E assertions for richer replay safety checks and negative payment workflow cases.
-- Add Kubernetes manifests and Helm chart after the Compose MVP is fully verified.
+- Add a real Kubernetes cluster smoke test and production values examples for managed dependencies.
 - Add schema compatibility checks for event envelope versions.

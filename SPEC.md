@@ -6,7 +6,7 @@
 
 ## Architecture Scope
 
-The first runnable product is a Docker Compose MVP. Kubernetes and Helm are deferred until the Compose system is operational and tested.
+The first runnable product is a Docker Compose MVP. Kubernetes and Helm packaging is added after the Compose system is operational and tested; the chart targets the application services and expects backing infrastructure to be supplied by the cluster environment.
 
 ### Core Runtime
 

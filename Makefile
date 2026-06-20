@@ -2,10 +2,11 @@ SHELL := /bin/sh
 COMPOSE ?= podman compose
 MVNW ?= ./mvnw
 PYTHON ?= python3
+HELM ?= helm
 
 .PHONY: up down seed test integration-test e2e-test demo logs smoke \
 	simulate-payment-stuck simulate-notification-failure simulate-auth-failure \
-	simulate-high-latency simulate-kafka-lag
+	simulate-high-latency simulate-kafka-lag helm-template
 
 up:
 	$(COMPOSE) up -d --build
@@ -51,3 +52,6 @@ simulate-high-latency:
 
 simulate-kafka-lag:
 	./scripts/simulations/kafka-lag.sh
+
+helm-template:
+	$(HELM) template banking deploy/helm/banking-platform

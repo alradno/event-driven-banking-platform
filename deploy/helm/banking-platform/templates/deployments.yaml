@@ -1,0 +1,74 @@
+{{- range $key, $service := .Values.services }}
+{{- if $service.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "banking-platform.serviceName" (dict "root" $ "service" $service) }}
+  labels:
+    {{- include "banking-platform.serviceLabels" (dict "root" $ "service" $service) | nindent 4 }}
+spec:
+  replicas: {{ $service.replicas }}
+  selector:
+    matchLabels:
+      {{- include "banking-platform.serviceSelectorLabels" (dict "root" $ "service" $service) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "banking-platform.serviceSelectorLabels" (dict "root" $ "service" $service) | nindent 8 }}
+      {{- if $service.metrics.enabled }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: {{ $service.metrics.path | quote }}
+        prometheus.io/port: {{ $service.service.port | quote }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "banking-platform.serviceAccountName" $ }}
+      containers:
+        - name: {{ $service.name }}
+          image: "{{ $service.image.repository }}:{{ $service.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $service.image.pullPolicy | default $.Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $service.service.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "banking-platform.fullname" $ }}-config
+          env:
+            {{- range $envName, $envValue := $service.env }}
+            - name: {{ $envName }}
+              value: {{ $envValue | quote }}
+            {{- end }}
+            {{- if $service.database }}
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://{{ $.Values.postgres.host }}:{{ $.Values.postgres.port }}/{{ $service.database }}"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "banking-platform.postgresSecretName" $ }}
+                  key: {{ $.Values.postgres.usernameKey }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "banking-platform.postgresSecretName" $ }}
+                  key: {{ $.Values.postgres.passwordKey }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: {{ $service.health.readinessPath }}
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: {{ $service.health.livenessPath }}
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            {{- toYaml $service.resources | nindent 12 }}
+{{- end }}
+{{- end }}

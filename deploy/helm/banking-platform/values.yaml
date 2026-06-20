@@ -1,0 +1,235 @@
+nameOverride: ""
+fullnameOverride: banking-platform
+
+global:
+  imagePullPolicy: IfNotPresent
+  otlpTracingEndpoint: http://otel-collector:4318/v1/traces
+  tracingSampleProbability: "1.0"
+  otelExporterOtlpEndpoint: http://otel-collector:4318
+  javaToolOptions: "-XX:+IgnoreUnrecognizedVMOptions -XX:UseSVE=0"
+
+serviceAccount:
+  create: true
+  name: ""
+
+external:
+  kafkaBootstrapServers: kafka:9092
+  redisHost: redis
+  redisPort: "6379"
+  keycloakIssuerUri: http://keycloak:8080/realms/banking
+  keycloakJwkSetUri: http://keycloak:8080/realms/banking/protocol/openid-connect/certs
+
+postgres:
+  host: postgres
+  port: "5432"
+  username: banking
+  password: banking
+  existingSecret: ""
+  usernameKey: SPRING_DATASOURCE_USERNAME
+  passwordKey: SPRING_DATASOURCE_PASSWORD
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: banking.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+services:
+  apiGateway:
+    enabled: true
+    name: api-gateway
+    replicas: 1
+    image:
+      repository: localhost/event-driven-banking-platform_api-gateway
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+      CUSTOMER_SERVICE_URL: http://banking-platform-customer-service:8080
+      ACCOUNT_SERVICE_URL: http://banking-platform-account-service:8080
+      PAYMENT_SERVICE_URL: http://banking-platform-payment-service:8080
+      AUDIT_SERVICE_URL: http://banking-platform-audit-service:8080
+      NOTIFICATION_SERVICE_URL: http://banking-platform-notification-service:8080
+      AI_INCIDENT_ASSISTANT_URL: http://banking-platform-ai-incident-assistant:8090
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
+  customerService:
+    enabled: true
+    name: customer-service
+    replicas: 1
+    database: customer_db
+    image:
+      repository: localhost/event-driven-banking-platform_customer-service
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
+  accountService:
+    enabled: true
+    name: account-service
+    replicas: 1
+    database: account_db
+    image:
+      repository: localhost/event-driven-banking-platform_account-service
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
+  paymentService:
+    enabled: true
+    name: payment-service
+    replicas: 1
+    database: payment_db
+    image:
+      repository: localhost/event-driven-banking-platform_payment-service
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+      ACCOUNT_SERVICE_URL: http://banking-platform-account-service:8080
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 750m
+        memory: 1Gi
+
+  auditService:
+    enabled: true
+    name: audit-service
+    replicas: 1
+    database: audit_db
+    image:
+      repository: localhost/event-driven-banking-platform_audit-service
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
+  notificationService:
+    enabled: true
+    name: notification-service
+    replicas: 1
+    image:
+      repository: localhost/event-driven-banking-platform_notification-service
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8080
+    metrics:
+      enabled: true
+      path: /actuator/prometheus
+    health:
+      readinessPath: /actuator/health/readiness
+      livenessPath: /actuator/health/liveness
+    env:
+      SERVER_PORT: "8080"
+      DEMO_NOTIFICATION_FAILURE: "false"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+      limits:
+        cpu: 500m
+        memory: 768Mi
+
+  aiIncidentAssistant:
+    enabled: true
+    name: ai-incident-assistant
+    replicas: 1
+    image:
+      repository: localhost/event-driven-banking-platform_ai-incident-assistant
+      tag: latest
+    service:
+      type: ClusterIP
+      port: 8090
+    metrics:
+      enabled: false
+      path: ""
+    health:
+      readinessPath: /health
+      livenessPath: /health
+    env:
+      RUNBOOK_DIR: /app/runbooks
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 384Mi

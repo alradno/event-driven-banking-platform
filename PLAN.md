@@ -47,9 +47,9 @@
 
 ## Current Branch Increment
 
-The current branch targets observability dashboard and alert evidence:
+The current branch targets Kubernetes and Helm packaging:
 
-- Expand the provisioned Grafana banking dashboard with service availability, HTTP, payment, Kafka, JVM, CPU, and log panels.
-- Mount and load Prometheus alert rules for service down, gateway errors/auth spikes, latency, payment failures, Kafka lag, notification listener failures, and DB pool saturation.
-- Capture a local dashboard screenshot after running the Compose E2E flow.
+- Add a Helm chart for the gateway, Java services, notification service, and AI incident assistant.
+- Parameterize external PostgreSQL, Kafka, Redis, Keycloak, and OpenTelemetry endpoints.
+- Provide render/install documentation and a `make helm-template` helper.
 - Keep `STATUS.md` current with local evidence before merging back to `master`.

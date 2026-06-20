@@ -5,6 +5,7 @@ This portfolio system is intentionally local-first. Before production, the follo
 - Replace demo credentials with managed secret storage.
 - Enforce mTLS or service mesh identity between internal services.
 - Use managed PostgreSQL, Kafka, Redis, and Keycloak or equivalent hardened services.
+- Provide environment-specific Helm values and run a Kubernetes smoke test against a real cluster.
 - Add schema migrations with Flyway or Liquibase.
 - Add Kafka schema registry or a formal compatibility verifier.
 - Add real alert routing and on-call ownership.

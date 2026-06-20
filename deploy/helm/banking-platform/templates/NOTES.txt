@@ -1,0 +1,11 @@
+Banking Platform chart rendered for release {{ .Release.Name }}.
+
+Gateway service:
+  {{ include "banking-platform.serviceName" (dict "root" . "service" .Values.services.apiGateway) }}
+
+Local port-forward:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "banking-platform.serviceName" (dict "root" . "service" .Values.services.apiGateway) }} 18080:8080
+
+The chart expects PostgreSQL, Kafka, Redis, Keycloak, OpenTelemetry collector,
+Prometheus, and Grafana endpoints to be provided by the target environment or
+overridden in values.

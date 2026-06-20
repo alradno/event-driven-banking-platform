@@ -23,6 +23,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Notification DLQ replay support added on branch `feat/notification-dlq-replay`.
 - OpenTelemetry trace export E2E coverage added on branch `test/trace-export-e2e`.
 - Observability dashboard, alert loading, and screenshot evidence added on branch `feat/observability-dashboards-alerts`.
+- Kubernetes/Helm service chart added on branch `feat/kubernetes-helm`.
 
 ## In Progress
 
@@ -31,7 +32,6 @@ The repository started from the initial `README.md` only. The first implementati
 ## Not Yet Complete
 
 - More negative and failure-mode E2E coverage for payment edge cases and replay safety.
-- Kubernetes/Helm.
 
 ## Local Tooling Observed
 
@@ -76,3 +76,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make test`.
 - Passed: `make integration-test`; Maven `verify -Pintegration`, smoke, and E2E runtime contract completed after dashboard/alert changes.
 - Completed: observability dashboard and alerts branch merged back to `master`.
+- Passed: `helm lint deploy/helm/banking-platform` using `alpine/helm:3.15.4`.
+- Passed: `helm template banking deploy/helm/banking-platform` using `alpine/helm:3.15.4`.
+- Passed: `make helm-template` with `HELM` pointed at the containerized Helm runner.
+- Passed: `make test` after adding the Helm chart and Kubernetes documentation.
