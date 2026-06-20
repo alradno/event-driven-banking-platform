@@ -4,9 +4,8 @@ Last reviewed: 2026-06-20
 
 ## Verdict
 
-The repository is runnable, documented, and locally verified for the Compose portfolio objective. The full objective is not marked complete yet because two checks require external state that is not currently available in this local workspace:
+The repository is runnable, documented, and locally verified for the Compose portfolio objective. The full objective is not marked complete yet because one check requires external state that is not currently available in this local workspace:
 
-- Real Kubernetes cluster smoke: blocked because `kubectl config current-context` is not set.
 - Remote CI pass: not verified because local commits have not been pushed.
 
 ## Objective Coverage
@@ -23,18 +22,12 @@ The repository is runnable, documented, and locally verified for the Compose por
 | Security | Complete locally | 401, 403, ownership isolation, 429, JWT roles, security headers, OWASP mapping, and secret-scan evidence are documented. |
 | Observability | Complete locally | Metrics, trace propagation/export evidence, dashboards, alerts, screenshot, and runbooks are present. |
 | Tests | Complete locally | `make test`, `make integration-test`, Testcontainers/WireMock ITs, Compose smoke/E2E, and simulation targets have passing local evidence in `STATUS.md`. |
-| Kubernetes packaging | Partially complete | Helm lint/template and offline manifest contract validation pass; real cluster smoke remains blocked by missing `kubectl` context. |
+| Kubernetes packaging | Complete locally | Helm lint/template, offline manifest contract validation, and `make k8s-smoke` server-side dry-run passed against a temporary `kind` cluster on Podman. Install/rollout smoke still requires pullable images and external infrastructure endpoints. |
 | CI/CD | Partially complete | GitHub Actions and Jenkinsfile run repository scans, tests, image builds, and Compose smoke/E2E; remote CI pass is not verified because nothing was pushed. |
 
 ## Remaining External Checks
 
-Run these when the environment exists:
-
-```sh
-HELM="podman run --rm -v $PWD:/work -w /work alpine/helm:3.15.4" make k8s-smoke
-```
-
-For an install/rollout smoke, provide pullable images plus external PostgreSQL, Kafka, Redis, Keycloak, and OpenTelemetry endpoints:
+Kubernetes API smoke has passed locally. For an install/rollout smoke, provide pullable images plus external PostgreSQL, Kafka, Redis, Keycloak, and OpenTelemetry endpoints:
 
 ```sh
 HELM_EXTRA_ARGS="-f deploy/helm/banking-platform/values-smoke.example.yaml" \
