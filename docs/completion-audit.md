@@ -15,6 +15,7 @@ The repository is runnable, documented, and locally verified for the Compose por
 | --- | --- | --- |
 | Branch discipline | Complete locally | Major increments were developed on branches and merged back to `master`; no push was performed. |
 | Core stack | Complete locally | Java/Spring Boot Maven monorepo, Python FastAPI AI assistant, Gateway, Keycloak, Redis, Kafka, PostgreSQL, Compose, OTel, Prometheus, Grafana. |
+| Fresh clone | Complete locally | Local clone into `/tmp/event-driven-banking-fresh-clone.tanvj0` passed `make scan`, `make test`, `podman compose config`, and `make k8s-validate` with containerized Helm. |
 | Service set | Complete locally | Gateway, customer, account, payment, audit, notification, and AI assistant are implemented and run in Compose. |
 | Payment flow | Complete locally | Idempotency, state transitions, negative payment outcomes, outbox publication, audit records, Kafka offsets, and notification events are covered by `make e2e-test` and `make integration-test`. |
 | Retry/DLQ | Complete locally | Notification DLQ replay and no-match replay safety are covered by E2E and simulation targets. |

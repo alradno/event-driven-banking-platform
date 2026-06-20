@@ -118,3 +118,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make test`, `podman compose config`, and `git diff --check` after adding the CI repository scan gate.
 - Completed: repository scan gate branch merged back to `master`.
 - Fixed: CI scan gate no longer matches its own pattern definitions; `make scan` passes after the self-exclusion fix.
+- Passed: fresh local clone from `/Users/aradlowskinova/Desktop/event-driven-banking-platform` into `/tmp/event-driven-banking-fresh-clone.tanvj0`; `make scan`, `make test`, `podman compose config`, and `make k8s-validate` with containerized Helm all passed without paid services or API keys.
