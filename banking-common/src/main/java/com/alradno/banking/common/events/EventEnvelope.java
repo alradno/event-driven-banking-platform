@@ -19,6 +19,9 @@ public record EventEnvelope(
 
     public EventEnvelope {
         Objects.requireNonNull(eventId, "eventId is required");
+        if (eventVersion != EventCompatibility.CURRENT_ENVELOPE_VERSION) {
+            throw new IllegalArgumentException("unsupported event envelope version " + eventVersion);
+        }
         requireText(eventType, "eventType");
         requireText(producer, "producer");
         requireText(correlationId, "correlationId");

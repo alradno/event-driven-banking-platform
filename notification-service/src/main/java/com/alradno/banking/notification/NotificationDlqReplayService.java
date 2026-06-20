@@ -1,5 +1,6 @@
 package com.alradno.banking.notification;
 
+import com.alradno.banking.common.events.EventCompatibility;
 import com.alradno.banking.common.events.EventEnvelope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
@@ -64,6 +65,7 @@ public class NotificationDlqReplayService {
                     }
                     if (matchesCorrelationId(record.value(), correlationId)) {
                         EventEnvelope event = objectMapper.readValue(record.value(), EventEnvelope.class);
+                        EventCompatibility.requireSupported(event);
                         kafkaTemplate.send(PAYMENT_TOPIC, event.subject(), record.value()).get(5, TimeUnit.SECONDS);
                         replayed++;
                     }
@@ -80,6 +82,7 @@ public class NotificationDlqReplayService {
     boolean matchesCorrelationId(String raw, String correlationId) {
         try {
             EventEnvelope event = objectMapper.readValue(raw, EventEnvelope.class);
+            EventCompatibility.requireSupported(event);
             return correlationId.equals(event.correlationId());
         } catch (Exception ex) {
             return false;

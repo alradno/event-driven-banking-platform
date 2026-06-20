@@ -47,7 +47,7 @@ Sensitive values must never be logged, stored in audit payloads, or committed. T
 
 ## Event Model
 
-All domain, audit, security, and notification events use a versioned envelope:
+All domain, audit, security, and notification events use a versioned envelope. The current envelope version is `1`; consumers reject unknown envelope versions and tolerate unknown payload fields.
 
 - `eventId`
 - `eventType`

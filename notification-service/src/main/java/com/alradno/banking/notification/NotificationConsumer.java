@@ -1,5 +1,6 @@
 package com.alradno.banking.notification;
 
+import com.alradno.banking.common.events.EventCompatibility;
 import com.alradno.banking.common.events.EventEnvelope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class NotificationConsumer {
     @KafkaListener(id = "notification-service", topics = "bank.payment.events")
     public void onPaymentEvent(String raw) throws Exception {
         EventEnvelope event = objectMapper.readValue(raw, EventEnvelope.class);
+        EventCompatibility.requireSupported(event);
         if (!event.eventType().equals("payment.completed") && !event.eventType().equals("payment.rejected")) {
             return;
         }
