@@ -21,7 +21,7 @@
       "publicClient": true,
       "directAccessGrantsEnabled": true,
       "standardFlowEnabled": true,
-      "redirectUris": ["http://localhost:8080/*"],
+      "redirectUris": ["http://localhost:18080/*"],
       "webOrigins": ["*"],
       "protocol": "openid-connect",
       "protocolMappers": [
@@ -60,45 +60,69 @@
     {
       "username": "alice",
       "enabled": true,
+      "email": "alice@example.test",
       "emailVerified": true,
       "firstName": "Alice",
       "lastName": "Martin",
       "attributes": {"customer_id": ["11111111-1111-1111-1111-111111111111"]},
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["CUSTOMER"]
     },
     {
       "username": "bob",
       "enabled": true,
+      "email": "bob@example.test",
       "emailVerified": true,
       "firstName": "Bob",
       "lastName": "Keller",
       "attributes": {"customer_id": ["22222222-2222-2222-2222-222222222222"]},
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["CUSTOMER"]
     },
     {
       "username": "support",
       "enabled": true,
+      "email": "support@example.test",
+      "emailVerified": true,
+      "firstName": "Sam",
+      "lastName": "Support",
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["SUPPORT_AGENT"]
     },
     {
       "username": "auditor",
       "enabled": true,
+      "email": "auditor@example.test",
+      "emailVerified": true,
+      "firstName": "Ari",
+      "lastName": "Auditor",
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["AUDITOR"]
     },
     {
       "username": "sre",
       "enabled": true,
+      "email": "sre@example.test",
+      "emailVerified": true,
+      "firstName": "Riley",
+      "lastName": "Sre",
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["SRE"]
     },
     {
       "username": "admin",
       "enabled": true,
+      "email": "admin@example.test",
+      "emailVerified": true,
+      "firstName": "Alex",
+      "lastName": "Admin",
       "credentials": [{"type": "password", "value": "password", "temporary": false}],
+      "requiredActions": [],
       "realmRoles": ["ADMIN", "SRE", "AUDITOR"]
     }
   ]

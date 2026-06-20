@@ -9,9 +9,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8089/realms/banking}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:18089/realms/banking}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:18089/realms/banking/protocol/openid-connect/certs}
   cloud:
     gateway:
+      redis-rate-limiter:
+        include-headers: false
       default-filters:
         - SecureHeaders
         - name: RequestRateLimiter
