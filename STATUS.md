@@ -117,3 +117,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make scan`; repository hygiene and secret-pattern checks found no forbidden tracked artifacts or token/private-key patterns.
 - Passed: `make test`, `podman compose config`, and `git diff --check` after adding the CI repository scan gate.
 - Completed: repository scan gate branch merged back to `master`.
+- Fixed: CI scan gate no longer matches its own pattern definitions; `make scan` passes after the self-exclusion fix.
