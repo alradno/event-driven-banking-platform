@@ -123,3 +123,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: temporary `kind` v0.32.0 cluster on Podman with Kubernetes node `v1.36.1`; `make k8s-smoke` using `alpine/helm:3.15.4` passed Helm lint and Kubernetes server-side dry-run against context `kind-banking-smoke`.
 - Completed: Kubernetes smoke evidence branch merged back to `master`.
 - Passed: `make ci-local`; repository scans, Java unit tests, AI assistant unit tests, image builds, Compose readiness checks, smoke test, and E2E runtime contract completed locally before any push.
+- Completed: local CI parity branch merged back to `master`.
