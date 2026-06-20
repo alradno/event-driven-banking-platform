@@ -127,3 +127,4 @@ The repository started from the initial `README.md` only. The first implementati
 - Completed: local CI parity branch merged back to `master`.
 - Updated: GitHub Actions and Jenkins delegate to `make ci-local`, so remote CI uses the same readiness-aware scan/test/build/smoke/E2E flow that passed locally.
 - Passed: `make ci-local` again after switching GitHub Actions and Jenkins to the shared parity flow.
+- Completed: remote CI parity branch merged back to `master`.
