@@ -49,6 +49,6 @@
 
 The next branch should run only when external verification becomes available:
 
-- With a configured Kubernetes context, run `make k8s-smoke`; with pullable images and external dependencies, run `K8S_SMOKE_APPLY=true make k8s-smoke`.
 - After an approved push, verify the GitHub Actions workflow on GitHub.
-- Once those two external checks pass, update `STATUS.md` and `docs/completion-audit.md` from partial to complete.
+- Optionally run `K8S_SMOKE_APPLY=true make k8s-smoke` when pullable images and external infrastructure endpoints are available.
+- Once remote CI passes, update `STATUS.md` and `docs/completion-audit.md` from partial to complete.

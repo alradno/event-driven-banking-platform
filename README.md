@@ -181,7 +181,7 @@ Current test coverage includes:
 - Compose smoke test for gateway health, AI health, idempotency, and AI evidence.
 - Compose E2E runtime contract for 401/403/429, ownership isolation, payment completion, idempotency conflict protection, rejected payment outcomes, outbox publication, Kafka offsets, audit records, notification publication, notification DLQ/replay, no-match replay safety, gateway metrics, OpenTelemetry collector trace export, and AI report evidence.
 
-Planned expansion includes cluster smoke coverage for the Helm chart and broader producer/consumer event compatibility fixtures.
+Planned expansion includes optional Kubernetes install/rollout smoke with external infrastructure and broader producer/consumer event compatibility fixtures.
 
 ## Documentation
 
@@ -205,5 +205,5 @@ Planned expansion includes cluster smoke coverage for the Helm chart and broader
 
 ## Roadmap
 
-- Run the Kubernetes smoke against a real cluster once a context, pullable images, and managed dependencies are available.
+- Run optional Kubernetes install/rollout smoke once pullable images and managed dependencies are available.
 - Expand event compatibility fixtures across all producers and consumers.

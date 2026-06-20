@@ -29,14 +29,14 @@ The repository started from the initial `README.md` only. The first implementati
 - Kubernetes smoke readiness script and Make target added on branch `test/kubernetes-cluster-smoke-readiness`.
 - Completion audit added on branch `docs/final-objective-audit`.
 - Repository scan gate added on branch `ci/repository-scan-gate`.
+- Kubernetes API smoke passed on temporary `kind`/Podman cluster on branch `docs/kind-k8s-smoke-evidence`.
 
 ## In Progress
 
-- Waiting for external verification inputs.
+- Waiting for remote CI verification after an approved push.
 
 ## Not Yet Complete
 
-- A real Kubernetes cluster smoke test has not been run because the local `kubectl` has no current context configured.
 - Remote GitHub Actions CI has not been verified because the local commits have not been pushed.
 
 ## Local Tooling Observed
@@ -45,7 +45,7 @@ The repository started from the initial `README.md` only. The first implementati
 - Maven not installed locally; repository will include `./mvnw`.
 - Python available locally: Python 3.13.
 - Docker CLI not installed locally; Podman is available and exposes a Docker-compatible socket that Testcontainers can use.
-- Kubernetes CLI available locally: `kubectl` is installed, but `kubectl config current-context` is not set.
+- Kubernetes CLI available locally: `kubectl` is installed. A temporary `kind` cluster was created with Podman for API server smoke validation and can be deleted after evidence capture.
 
 ## Completion Evidence Log
 
@@ -108,14 +108,15 @@ The repository started from the initial `README.md` only. The first implementati
 - Passed: `make helm-lint` using `alpine/helm:3.15.4`; strict Helm linting succeeded with only the informational missing-icon recommendation.
 - Passed: `make helm-template` using `alpine/helm:3.15.4`; rendered 766 lines of Kubernetes manifests.
 - Passed: `make k8s-validate` using `alpine/helm:3.15.4`; offline manifest checks verified seven Deployments, seven Services, probes, scrape annotations, config, and default Postgres Secret wiring.
-- Blocked as expected: `make k8s-smoke` cannot run locally yet because `kubectl current-context` is not set.
+- Superseded: `make k8s-smoke` was previously blocked by missing `kubectl current-context`, then later passed against a temporary `kind` cluster.
 - Passed: `make test`, `podman compose config`, and `git diff --check` after the Kubernetes smoke readiness branch changes.
 - Passed: secret scan for the provided Bitbucket and Sonar token patterns returned no matches after the Kubernetes smoke readiness branch changes.
 - Completed: Kubernetes smoke readiness branch merged back to `master`.
-- Completed: objective audit in `docs/completion-audit.md`; remaining incomplete checks are external Kubernetes cluster smoke and remote CI verification after push.
+- Completed: objective audit in `docs/completion-audit.md`; remaining incomplete check is remote CI verification after push.
 - Completed: final objective audit branch merged back to `master`.
 - Passed: `make scan`; repository hygiene and secret-pattern checks found no forbidden tracked artifacts or token/private-key patterns.
 - Passed: `make test`, `podman compose config`, and `git diff --check` after adding the CI repository scan gate.
 - Completed: repository scan gate branch merged back to `master`.
 - Fixed: CI scan gate no longer matches its own pattern definitions; `make scan` passes after the self-exclusion fix.
 - Passed: fresh local clone from `/Users/aradlowskinova/Desktop/event-driven-banking-platform` into `/tmp/event-driven-banking-fresh-clone.tanvj0`; `make scan`, `make test`, `podman compose config`, and `make k8s-validate` with containerized Helm all passed without paid services or API keys.
+- Passed: temporary `kind` v0.32.0 cluster on Podman with Kubernetes node `v1.36.1`; `make k8s-smoke` using `alpine/helm:3.15.4` passed Helm lint and Kubernetes server-side dry-run against context `kind-banking-smoke`.
